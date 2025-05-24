@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
@@ -53,7 +52,7 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
   const handleSelectChange = (name: string, value: string) => {
     setNewEmployee({
       ...newEmployee,
-      [name]: value,
+      [name]: name === "commissionType" ? value as "fixed" | "percentage" | "mixed" : value,
     });
   };
 
@@ -66,7 +65,6 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
     const employeeData = {
       ...newEmployee,
       joinDate: new Date(newEmployee.joinDate),
-      commissionType: newEmployee.commissionType as "fixed" | "percentage" | "mixed",
     };
     onSubmit(employeeData);
   };
