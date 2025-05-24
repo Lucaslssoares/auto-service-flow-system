@@ -9,12 +9,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Users } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEmployeeManagement } from "@/hooks/useEmployeeManagement";
 import { EmployeeList } from "@/components/employees/EmployeeList";
 import { EmployeeSearch } from "@/components/employees/EmployeeSearch";
 import { EmployeeForm } from "@/components/employees/EmployeeForm";
 
+/**
+ * Página principal de gerenciamento de funcionários
+ * Permite visualizar, buscar e adicionar novos funcionários
+ */
 const Employees = () => {
   const {
     filteredEmployees,

@@ -20,6 +20,10 @@ interface EmployeeFormProps {
   onCancel: () => void;
 }
 
+/**
+ * Formulário para cadastro de novos funcionários
+ * Permite inserir dados pessoais, profissionais e configurações de comissão
+ */
 export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
   const [newEmployee, setNewEmployee] = useState({
     name: "",
@@ -29,9 +33,12 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
     document: "",
     joinDate: format(new Date(), "yyyy-MM-dd"),
     salary: 0,
-    commissionType: "percentage",
+    commissionType: "percentage" as "fixed" | "percentage" | "mixed",
   });
 
+  /**
+   * Manipula mudanças nos campos de input do formulário
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewEmployee({
@@ -40,6 +47,9 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
     });
   };
 
+  /**
+   * Manipula mudanças nos campos de seleção (select) do formulário
+   */
   const handleSelectChange = (name: string, value: string) => {
     setNewEmployee({
       ...newEmployee,
@@ -47,12 +57,16 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
     });
   };
 
+  /**
+   * Processa o envio do formulário, convertendo os dados para o formato correto
+   */
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Convert joinDate string to Date object before submitting
+    // Converte a data de string para objeto Date antes de enviar
     const employeeData = {
       ...newEmployee,
       joinDate: new Date(newEmployee.joinDate),
+      commissionType: newEmployee.commissionType as "fixed" | "percentage" | "mixed",
     };
     onSubmit(employeeData);
   };

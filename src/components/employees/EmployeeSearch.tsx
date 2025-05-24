@@ -8,6 +8,10 @@ interface EmployeeSearchProps {
   onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+/**
+ * Componente de busca para funcionários
+ * Permite filtrar funcionários por nome, cargo ou email
+ */
 export const EmployeeSearch = ({ searchTerm, onSearch }: EmployeeSearchProps) => {
   return (
     <div className="flex items-center">
