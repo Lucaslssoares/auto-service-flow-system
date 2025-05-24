@@ -49,7 +49,12 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(newEmployee);
+    // Convert joinDate string to Date object before submitting
+    const employeeData = {
+      ...newEmployee,
+      joinDate: new Date(newEmployee.joinDate),
+    };
+    onSubmit(employeeData);
   };
 
   return (
