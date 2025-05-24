@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
@@ -24,7 +25,16 @@ interface EmployeeFormProps {
  * Permite inserir dados pessoais, profissionais e configurações de comissão
  */
 export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
-  const [newEmployee, setNewEmployee] = useState({
+  const [newEmployee, setNewEmployee] = useState<{
+    name: string;
+    role: string;
+    phone: string;
+    email: string;
+    document: string;
+    joinDate: string;
+    salary: number;
+    commissionType: "fixed" | "percentage" | "mixed";
+  }>({
     name: "",
     role: "",
     phone: "",
@@ -32,7 +42,7 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
     document: "",
     joinDate: format(new Date(), "yyyy-MM-dd"),
     salary: 0,
-    commissionType: "percentage" as "fixed" | "percentage" | "mixed",
+    commissionType: "percentage",
   });
 
   /**
