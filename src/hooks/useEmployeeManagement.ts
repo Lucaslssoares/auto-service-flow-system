@@ -1,54 +1,109 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Employee } from "@/types";
-import { employees as mockEmployees } from "@/data/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-/**
- * Hook personalizado para gerenciamento de funcionários
- * Controla estado dos funcionários, busca e operações CRUD
- */
 export const useEmployeeManagement = () => {
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  /**
-   * Manipula a busca por funcionários
-   * Atualiza o termo de busca conforme o usuário digita
-   */
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  const fetchEmployees = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*")
+        .order("name");
+
+      if (error) throw error;
+
+      const formattedEmployees = data.map(emp => ({
+        id: emp.id,
+        name: emp.name,
+        role: emp.role,
+        phone: emp.phone,
+        email: emp.email,
+        document: emp.document,
+        joinDate: new Date(emp.join_date),
+        salary: emp.salary,
+        commissionType: emp.commission_type as "fixed" | "percentage" | "mixed",
+      }));
+
+      setEmployees(formattedEmployees);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao carregar funcionários",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  /**
-   * Filtra funcionários baseado no termo de busca
-   * Busca por nome, cargo ou email
-   */
   const filteredEmployees = employees.filter((employee) =>
     employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  /**
-   * Adiciona um novo funcionário à lista
-   * Gera ID automático e fecha o diálogo após salvar
-   */
-  const addEmployee = (employeeData: Omit<Employee, "id">) => {
-    const newEmployeeEntry: Employee = {
-      id: (employees.length + 1).toString(),
-      name: employeeData.name,
-      role: employeeData.role,
-      phone: employeeData.phone,
-      email: employeeData.email,
-      document: employeeData.document,
-      joinDate: new Date(employeeData.joinDate),
-      salary: employeeData.salary,
-      commissionType: employeeData.commissionType as "fixed" | "percentage" | "mixed",
-    };
-    
-    setEmployees([...employees, newEmployeeEntry]);
-    setDialogOpen(false);
+  const addEmployee = async (employeeData: Omit<Employee, "id">) => {
+    try {
+      const { data, error } = await supabase
+        .from("employees")
+        .insert([{
+          name: employeeData.name,
+          role: employeeData.role,
+          phone: employeeData.phone,
+          email: employeeData.email,
+          document: employeeData.document,
+          join_date: employeeData.joinDate.toISOString().split('T')[0],
+          salary: employeeData.salary,
+          commission_type: employeeData.commissionType,
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newEmployee: Employee = {
+        id: data.id,
+        name: data.name,
+        role: data.role,
+        phone: data.phone,
+        email: data.email,
+        document: data.document,
+        joinDate: new Date(data.join_date),
+        salary: data.salary,
+        commissionType: data.commission_type as "fixed" | "percentage" | "mixed",
+      };
+
+      setEmployees([...employees, newEmployee]);
+      setDialogOpen(false);
+      
+      toast({
+        title: "Funcionário adicionado com sucesso!",
+        description: `${employeeData.name} foi cadastrado no sistema.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao adicionar funcionário",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return {
@@ -56,6 +111,7 @@ export const useEmployeeManagement = () => {
     filteredEmployees,
     searchTerm,
     dialogOpen,
+    isLoading,
     setDialogOpen,
     handleSearch,
     addEmployee

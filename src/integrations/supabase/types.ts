@@ -9,7 +9,362 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      appointment_services: {
+        Row: {
+          appointment_id: string | null
+          created_at: string | null
+          id: string
+          service_id: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string | null
+          id?: string
+          service_id?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string | null
+          id?: string
+          service_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_services_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      appointments: {
+        Row: {
+          created_at: string | null
+          customer_id: string | null
+          date: string
+          id: string
+          notes: string | null
+          status: string
+          total_price: number
+          vehicle_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          status: string
+          total_price: number
+          vehicle_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          total_price?: number
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          cpf: string
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          phone: string
+        }
+        Insert: {
+          cpf: string
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          phone: string
+        }
+        Update: {
+          cpf?: string
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+        }
+        Relationships: []
+      }
+      employees: {
+        Row: {
+          commission_type: string
+          created_at: string | null
+          document: string
+          email: string
+          id: string
+          join_date: string
+          name: string
+          phone: string
+          role: string
+          salary: number
+          updated_at: string | null
+        }
+        Insert: {
+          commission_type: string
+          created_at?: string | null
+          document: string
+          email: string
+          id?: string
+          join_date: string
+          name: string
+          phone: string
+          role: string
+          salary?: number
+          updated_at?: string | null
+        }
+        Update: {
+          commission_type?: string
+          created_at?: string | null
+          document?: string
+          email?: string
+          id?: string
+          join_date?: string
+          name?: string
+          phone?: string
+          role?: string
+          salary?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      payment_transactions: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          created_at: string | null
+          date: string
+          id: string
+          method: string
+          notes: string | null
+          status: string
+        }
+        Insert: {
+          amount: number
+          appointment_id?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          method: string
+          notes?: string | null
+          status: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          method?: string
+          notes?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id: string
+          name: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      service_executions: {
+        Row: {
+          appointment_id: string | null
+          created_at: string | null
+          employee_id: string | null
+          end_time: string | null
+          id: string
+          notes: string | null
+          profit_percentage: number
+          service_id: string | null
+          start_time: string
+          status: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          end_time?: string | null
+          id?: string
+          notes?: string | null
+          profit_percentage?: number
+          service_id?: string | null
+          start_time: string
+          status?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          end_time?: string | null
+          id?: string
+          notes?: string | null
+          profit_percentage?: number
+          service_id?: string | null
+          start_time?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_executions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_executions_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_executions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          commission_percentage: number
+          created_at: string | null
+          description: string | null
+          duration: number
+          id: string
+          name: string
+          price: number
+        }
+        Insert: {
+          commission_percentage?: number
+          created_at?: string | null
+          description?: string | null
+          duration: number
+          id?: string
+          name: string
+          price: number
+        }
+        Update: {
+          commission_percentage?: number
+          created_at?: string | null
+          description?: string | null
+          duration?: number
+          id?: string
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          brand: string
+          color: string
+          created_at: string | null
+          customer_id: string | null
+          id: string
+          model: string
+          plate: string
+          type: string
+          year: number | null
+        }
+        Insert: {
+          brand: string
+          color: string
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string
+          model: string
+          plate: string
+          type: string
+          year?: number | null
+        }
+        Update: {
+          brand?: string
+          color?: string
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string
+          model?: string
+          plate?: string
+          type?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
