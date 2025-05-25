@@ -130,17 +130,7 @@ const Index = () => {
         ))}
       </div>
 
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>🚀 Novidades - Trabalho em Equipe</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            Agora você pode configurar equipes para trabalhar em serviços e dividir automaticamente os lucros entre os funcionários. 
-            Acesse a página de <strong>Execução</strong> para gerenciar as equipes e acompanhar o progresso dos serviços.
-          </p>
-        </CardContent>
-      </Card>
+      
     </div>
   );
 };
