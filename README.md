@@ -174,9 +174,8 @@ Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICE
 ## 📞 Suporte
 
 Para dúvidas ou suporte, entre em contato através:
-- Issues do GitHub
-- Email: [seu-email@exemplo.com]
+- Email: solareslucas403@gmail.com
 
 ---
 
-**Desenvolvido com ❤️ para otimizar a gestão de lava-jatos**
+**Desenvolvido com para otimizar a gestão de lava-jatos**
