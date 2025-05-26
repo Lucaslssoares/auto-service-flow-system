@@ -56,7 +56,7 @@ const Auth = () => {
       if (data.user) {
         toast({
           title: "Login realizado com sucesso!",
-          description: "Bem-vindo ao Lava Car System",
+          description: "Bem-vindo ao Lava Car",
         });
         navigate("/");
       }
