@@ -8,6 +8,7 @@ export const useEmployeeManagement = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -106,14 +107,102 @@ export const useEmployeeManagement = () => {
     }
   };
 
+  const updateEmployee = async (id: string, employeeData: Omit<Employee, "id">) => {
+    try {
+      const { data, error } = await supabase
+        .from("employees")
+        .update({
+          name: employeeData.name,
+          role: employeeData.role,
+          phone: employeeData.phone,
+          email: employeeData.email,
+          document: employeeData.document,
+          join_date: employeeData.joinDate.toISOString().split('T')[0],
+          salary: employeeData.salary,
+          commission_type: employeeData.commissionType,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const updatedEmployee: Employee = {
+        id: data.id,
+        name: data.name,
+        role: data.role,
+        phone: data.phone,
+        email: data.email,
+        document: data.document,
+        joinDate: new Date(data.join_date),
+        salary: data.salary,
+        commissionType: data.commission_type as "fixed" | "percentage" | "mixed",
+      };
+
+      setEmployees(prev => prev.map(e => e.id === id ? updatedEmployee : e));
+      setDialogOpen(false);
+      setEditingEmployee(null);
+      
+      toast({
+        title: "Funcionário atualizado com sucesso!",
+        description: `${employeeData.name} foi atualizado.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar funcionário",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteEmployee = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("employees")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setEmployees(prev => prev.filter(e => e.id !== id));
+      
+      toast({
+        title: "Funcionário removido com sucesso!",
+        description: "O funcionário foi removido do sistema.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao remover funcionário",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openEditDialog = (employee: Employee) => {
+    setEditingEmployee(employee);
+    setDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setDialogOpen(false);
+    setEditingEmployee(null);
+  };
+
   return {
     employees,
     filteredEmployees,
     searchTerm,
     dialogOpen,
+    editingEmployee,
     isLoading,
     setDialogOpen,
     handleSearch,
-    addEmployee
+    addEmployee,
+    updateEmployee,
+    deleteEmployee,
+    openEditDialog,
+    closeDialog
   };
 };

@@ -1,6 +1,12 @@
 
 import React from "react";
-import { format } from "date-fns";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -9,65 +15,116 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Employee } from "@/types";
+import { ActionsDropdown } from "@/components/common/ActionsDropdown";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface EmployeeListProps {
   employees: Employee[];
+  onEdit?: (employee: Employee) => void;
+  onDelete?: (id: string) => void;
 }
 
-// Map to translate commission types to Portuguese
-const commissionTypeNames: Record<string, string> = {
-  fixed: "Fixo",
-  percentage: "Porcentagem",
-  mixed: "Misto",
-};
+export const EmployeeList = ({ employees, onEdit, onDelete }: EmployeeListProps) => {
+  const getCommissionTypeLabel = (type: string) => {
+    switch (type) {
+      case "fixed":
+        return "Fixo";
+      case "percentage":
+        return "Porcentagem";
+      case "mixed":
+        return "Misto";
+      default:
+        return type;
+    }
+  };
 
-export const EmployeeList = ({ employees }: EmployeeListProps) => {
+  const getCommissionTypeBadgeVariant = (type: string) => {
+    switch (type) {
+      case "fixed":
+        return "default";
+      case "percentage":
+        return "secondary";
+      case "mixed":
+        return "outline";
+      default:
+        return "default";
+    }
+  };
+
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>Cargo</TableHead>
-            <TableHead>Contato</TableHead>
-            <TableHead>Data de Entrada</TableHead>
-            <TableHead className="text-right">Salário Base</TableHead>
-            <TableHead>Tipo de Comissão</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {employees.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
-                Nenhum funcionário encontrado.
-              </TableCell>
-            </TableRow>
-          ) : (
-            employees.map((employee) => (
-              <TableRow key={employee.id} className="cursor-pointer hover:bg-muted/50">
-                <TableCell className="font-medium">{employee.name}</TableCell>
-                <TableCell>{employee.role}</TableCell>
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground">{employee.phone}</span>
-                    <span className="text-xs text-muted-foreground">{employee.email}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {format(employee.joinDate, "dd/MM/yyyy")}
-                </TableCell>
-                <TableCell className="text-right">
-                  R$ {employee.salary.toFixed(2).replace('.', ',')}
-                </TableCell>
-                <TableCell>
-                  {commissionTypeNames[employee.commissionType]}
-                </TableCell>
+    <Card>
+      <CardHeader>
+        <CardTitle>Lista de Funcionários</CardTitle>
+        <CardDescription>
+          {employees.length} funcionário(s) encontrado(s)
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {employees.length === 0 ? (
+          <div className="text-center py-6 text-muted-foreground">
+            Nenhum funcionário encontrado
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Cargo</TableHead>
+                <TableHead>Contato</TableHead>
+                <TableHead>Admissão</TableHead>
+                <TableHead>Salário</TableHead>
+                <TableHead>Comissão</TableHead>
+                {(onEdit || onDelete) && <TableHead className="text-right">Ações</TableHead>}
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            </TableHeader>
+            <TableBody>
+              {employees.map((employee) => (
+                <TableRow key={employee.id}>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{employee.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {employee.document}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{employee.role}</TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div>{employee.phone}</div>
+                      <div className="text-muted-foreground">{employee.email}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {format(employee.joinDate, "dd/MM/yyyy", { locale: ptBR })}
+                  </TableCell>
+                  <TableCell>
+                    R$ {employee.salary.toFixed(2).replace(".", ",")}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getCommissionTypeBadgeVariant(employee.commissionType)}>
+                      {getCommissionTypeLabel(employee.commissionType)}
+                    </Badge>
+                  </TableCell>
+                  {(onEdit || onDelete) && (
+                    <TableCell className="text-right">
+                      <ActionsDropdown
+                        onEdit={() => onEdit?.(employee)}
+                        onDelete={() => onDelete?.(employee.id)}
+                        itemName={employee.name}
+                        deleteDescription="Esta ação removerá permanentemente o funcionário do sistema."
+                      />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 };

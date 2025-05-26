@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { employees } from "@/data/mockData";
+import { ExportButton } from "@/components/common/ExportButton";
+import { formatCurrencyForExport } from "@/utils/exportUtils";
 
 interface CommissionsTableProps {
   employeeCommissions: Record<string, number>;
@@ -28,6 +30,27 @@ export const CommissionsTable = ({
   employeeCommissions, 
   completedAppointments 
 }: CommissionsTableProps) => {
+  // Preparar dados para exportação
+  const exportData = Object.keys(employeeCommissions).map(employeeId => {
+    const employee = employees.find(e => e.id === employeeId);
+    if (!employee) return null;
+    
+    const servicesCount = completedAppointments
+      .filter(app => app.employeeId === employeeId)
+      .reduce((count, app) => count + app.serviceIds.length, 0);
+    
+    const commission = employeeCommissions[employeeId];
+    const totalPay = employee.salary + commission;
+    
+    return {
+      Funcionário: employee.name,
+      'Serviços Realizados': servicesCount,
+      Comissão: formatCurrencyForExport(commission),
+      'Salário Base': formatCurrencyForExport(employee.salary),
+      Total: formatCurrencyForExport(totalPay)
+    };
+  }).filter(Boolean);
+
   return (
     <Card>
       <CardHeader>
@@ -85,7 +108,11 @@ export const CommissionsTable = ({
           </Table>
         )}
       </CardContent>
-      <CardFooter className="justify-end">
+      <CardFooter className="justify-between">
+        <ExportButton 
+          data={exportData} 
+          filename="comissoes" 
+        />
         <Button>Gerar Relatório de Comissões</Button>
       </CardFooter>
     </Card>
