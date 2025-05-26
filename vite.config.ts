@@ -24,8 +24,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Otimizações para produção
-    minify: 'terser',
+    // Usar minificação padrão do Vite (esbuild) em vez do Terser
     sourcemap: mode === 'development',
     rollupOptions: {
       output: {
