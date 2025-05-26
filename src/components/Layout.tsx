@@ -40,7 +40,7 @@ const Layout = () => {
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
-              <h1 className="text-xl font-semibold text-gray-900">Lava Car System</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Lava Car</h1>
             </div>
 
             {user && (
