@@ -13,6 +13,7 @@ export const useCustomerManagement = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { handleError } = useErrorHandler();
@@ -97,6 +98,80 @@ export const useCustomerManagement = () => {
   };
 
   /**
+   * Atualiza um cliente existente
+   */
+  const updateCustomer = async (id: string, customerData: Omit<Customer, "id" | "createdAt">) => {
+    try {
+      const { data, error } = await supabase
+        .from("customers")
+        .update({
+          name: customerData.name,
+          phone: customerData.phone,
+          email: customerData.email,
+          cpf: customerData.cpf,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const updatedCustomer: Customer = {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        cpf: data.cpf,
+        createdAt: new Date(data.created_at),
+      };
+
+      setCustomers(prev => prev.map(c => c.id === id ? updatedCustomer : c));
+      setDialogOpen(false);
+      setEditingCustomer(null);
+      
+      toast({
+        title: "Cliente atualizado com sucesso!",
+        description: `${customerData.name} foi atualizado.`,
+      });
+    } catch (error: any) {
+      handleError(error, 'updateCustomer');
+      toast({
+        title: "Erro ao atualizar cliente",
+        description: error.message || "Erro interno do servidor",
+        variant: "destructive",
+      });
+    }
+  };
+
+  /**
+   * Remove um cliente do banco de dados
+   */
+  const deleteCustomer = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("customers")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setCustomers(prev => prev.filter(c => c.id !== id));
+      
+      toast({
+        title: "Cliente removido com sucesso!",
+        description: "O cliente foi removido do sistema.",
+      });
+    } catch (error: any) {
+      handleError(error, 'deleteCustomer');
+      toast({
+        title: "Erro ao remover cliente",
+        description: error.message || "Erro interno do servidor",
+        variant: "destructive",
+      });
+    }
+  };
+
+  /**
    * Filtra clientes baseado no termo de busca
    */
   const filteredCustomers = customers.filter((customer) =>
@@ -113,6 +188,22 @@ export const useCustomerManagement = () => {
     setSearchTerm(event.target.value);
   };
 
+  /**
+   * Abre o dialog para edição
+   */
+  const openEditDialog = (customer: Customer) => {
+    setEditingCustomer(customer);
+    setDialogOpen(true);
+  };
+
+  /**
+   * Fecha o dialog
+   */
+  const closeDialog = () => {
+    setDialogOpen(false);
+    setEditingCustomer(null);
+  };
+
   // Carrega clientes ao montar o componente
   useEffect(() => {
     fetchCustomers();
@@ -123,10 +214,15 @@ export const useCustomerManagement = () => {
     filteredCustomers,
     searchTerm,
     dialogOpen,
+    editingCustomer,
     isLoading,
     setDialogOpen,
     handleSearch,
     addCustomer,
+    updateCustomer,
+    deleteCustomer,
+    openEditDialog,
+    closeDialog,
     refreshCustomers: fetchCustomers
   };
 };
