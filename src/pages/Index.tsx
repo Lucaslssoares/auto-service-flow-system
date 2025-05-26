@@ -22,7 +22,7 @@ const Index = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Lava Car System</CardTitle>
+            <CardTitle className="text-2xl font-bold">Lava Car</CardTitle>
             <CardDescription>
               Sistema completo de gerenciamento para lava-jatos
             </CardDescription>
@@ -95,10 +95,10 @@ const Index = () => {
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          Bem-vindo ao Lava Car System
+          Bem-vindo ao Lava Car 
         </h1>
         <p className="text-lg text-muted-foreground">
-          Olá, {user.email}! Escolha um módulo para começar
+          Olá, {user.email}! Seja bem vindo !
         </p>
       </div>
 
