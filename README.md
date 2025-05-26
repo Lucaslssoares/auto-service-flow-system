@@ -1,73 +1,182 @@
-# Welcome to your Lovable project
 
-## Project info
+# Lava Car System - Sistema de Gestão
 
-**URL**: https://lovable.dev/projects/830e9dc7-12fa-41d7-aa9f-a7fd862236b7
+Sistema completo de gestão para lava-jatos desenvolvido em React com TypeScript, integrado ao Supabase para funcionalidades de backend.
 
-## How can I edit this code?
+## 🚀 Funcionalidades Principais
 
-There are several ways of editing your application.
+- **Autenticação Segura**: Login/logout com proteção de rotas
+- **Gestão de Clientes**: Cadastro e busca de clientes
+- **Controle de Veículos**: Registro de veículos por cliente
+- **Catálogo de Serviços**: Gestão de serviços oferecidos
+- **Equipe**: Gerenciamento de funcionários
+- **Agendamentos**: Sistema de agendamento de serviços
+- **Trabalho em Equipe**: Divisão de lucros entre funcionários
+- **Execução**: Acompanhamento de serviços em andamento
+- **Financeiro**: Relatórios e análises financeiras
 
-**Use Lovable**
+## 🛠️ Tecnologias Utilizadas
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/830e9dc7-12fa-41d7-aa9f-a7fd862236b7) and start prompting.
+- **Frontend**: React 18, TypeScript, Vite
+- **UI**: Tailwind CSS, Shadcn/UI, Radix UI
+- **Backend**: Supabase (Auth, Database, RLS)
+- **Roteamento**: React Router DOM
+- **Gerenciamento de Estado**: TanStack Query
+- **Formulários**: React Hook Form + Zod
+- **Ícones**: Lucide React
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📋 Pré-requisitos
 
-**Use your preferred IDE**
+- Node.js 18+ e npm
+- Conta no Supabase (para produção)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Instalação e Configuração
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 1. Clone o repositório
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd lava-car-system
 ```
 
-**Edit a file directly in GitHub**
+### 2. Instale as dependências
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm install
+```
 
-**Use GitHub Codespaces**
+### 3. Configuração de Ambiente
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+#### Desenvolvimento
+O sistema está configurado para usar credenciais de desenvolvimento por padrão.
 
-## What technologies are used for this project?
+#### Produção
+Configure as seguintes variáveis de ambiente:
 
-This project is built with:
+```bash
+# .env.production
+VITE_SUPABASE_URL=sua_url_do_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 4. Execute o projeto
 
-## How can I deploy this project?
+```bash
+# Desenvolvimento
+npm run dev
 
-Simply open [Lovable](https://lovable.dev/projects/830e9dc7-12fa-41d7-aa9f-a7fd862236b7) and click on Share -> Publish.
+# Build para produção
+npm run build
 
-## Can I connect a custom domain to my Lovable project?
+# Preview da build de produção
+npm run preview
+```
 
-Yes, you can!
+## 🗄️ Estrutura do Banco de Dados
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+O sistema utiliza as seguintes tabelas principais:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- `profiles`: Perfis de usuários autenticados
+- `customers`: Dados dos clientes
+- `vehicles`: Veículos dos clientes
+- `services`: Catálogo de serviços
+- `employees`: Funcionários da empresa
+- `appointments`: Agendamentos de serviços
+- `service_executions`: Execução de serviços (trabalho em equipe)
+- `payment_transactions`: Transações financeiras
+
+## 🔐 Segurança
+
+- **Row Level Security (RLS)**: Todas as tabelas possuem políticas RLS
+- **Autenticação**: Sistema de autenticação integrado ao Supabase
+- **Proteção de Rotas**: Rotas protegidas para usuários autenticados
+- **Gerenciamento Seguro de Credenciais**: Variáveis de ambiente para produção
+
+## 📱 Responsividade
+
+O sistema é totalmente responsivo, otimizado para:
+- 📱 Dispositivos móveis (320px+)
+- 📱 Tablets (768px+)
+- 💻 Desktops (1024px+)
+
+## 🛡️ Tratamento de Erros
+
+- **Error Boundaries**: Captura erros de renderização
+- **Tratamento Assíncrono**: Hooks especializados para erros de API
+- **Feedback Visual**: Toasts e mensagens de erro para o usuário
+- **Logging**: Sistema de logs para monitoramento em produção
+
+## 🔧 Desenvolvimento
+
+### Estrutura de Pastas
+
+```
+src/
+├── components/          # Componentes reutilizáveis
+├── pages/              # Páginas da aplicação
+├── hooks/              # Hooks customizados
+├── types/              # Definições de tipos TypeScript
+├── config/             # Configurações da aplicação
+├── integrations/       # Integrações externas (Supabase)
+└── data/              # Dados mockados (apenas desenvolvimento)
+```
+
+### Padrões de Código
+
+- **TypeScript**: Tipagem estrita em todo o projeto
+- **Componentes Funcionais**: Uso de hooks do React
+- **Custom Hooks**: Lógica de negócio isolada em hooks
+- **Error Handling**: Tratamento consistente de erros
+- **Responsividade**: Mobile-first design
+
+## 📦 Build e Deploy
+
+### Build Otimizado
+
+```bash
+npm run build
+```
+
+O build inclui:
+- ✅ Minificação com Terser
+- ✅ Code splitting automático
+- ✅ Otimização de assets
+- ✅ Tree shaking
+
+### Deploy
+
+1. **Build da aplicação**
+2. **Configurar variáveis de ambiente no servidor**
+3. **Configurar Supabase URLs no painel administrativo**
+4. **Deploy dos arquivos estáticos**
+
+## 🔍 Monitoramento
+
+Para produção, recomenda-se integrar:
+- Serviços de logging (ex: Sentry)
+- Analytics (ex: Google Analytics)
+- Monitoramento de performance
+
+## 🤝 Contribuição
+
+Para contribuir com o projeto:
+
+1. Fork o repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 📞 Suporte
+
+Para dúvidas ou suporte, entre em contato através:
+- Issues do GitHub
+- Email: [seu-email@exemplo.com]
+
+---
+
+**Desenvolvido com ❤️ para otimizar a gestão de lava-jatos**

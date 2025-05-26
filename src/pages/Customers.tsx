@@ -1,5 +1,8 @@
 
-import { useState } from "react";
+/**
+ * Página de gerenciamento de clientes
+ * Integrada com Supabase para dados reais e otimizada para produção
+ */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,17 +23,27 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { customers as mockCustomers } from "@/data/mockData";
-import { Customer } from "@/types";
 import { format } from "date-fns";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Loader2 } from "lucide-react";
+import { useCustomerManagement } from "@/hooks/useCustomerManagement";
+import { useState } from "react";
+import { Customer } from "@/types";
 
+/**
+ * Componente principal da página de clientes
+ */
 const Customers = () => {
-  const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [open, setOpen] = useState(false);
-  
-  // New customer form state
+  const {
+    filteredCustomers,
+    searchTerm,
+    dialogOpen,
+    isLoading,
+    setDialogOpen,
+    handleSearch,
+    addCustomer
+  } = useCustomerManagement();
+
+  // Estado para o formulário de novo cliente
   const [newCustomer, setNewCustomer] = useState({
     name: "",
     phone: "",
@@ -38,61 +51,42 @@ const Customers = () => {
     cpf: "",
   });
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const filteredCustomers = customers.filter((customer) =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone.includes(searchTerm) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.cpf.includes(searchTerm)
-  );
-
+  /**
+   * Manipula mudanças nos campos do formulário
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewCustomer({
-      ...newCustomer,
+    setNewCustomer(prev => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /**
+   * Submete o formulário de novo cliente
+   */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Create new customer
-    const newCustomerEntry: Customer = {
-      id: (customers.length + 1).toString(),
-      name: newCustomer.name,
-      phone: newCustomer.phone,
-      email: newCustomer.email,
-      cpf: newCustomer.cpf,
-      createdAt: new Date(),
-    };
+    await addCustomer(newCustomer);
     
-    // Add to customer list
-    setCustomers([...customers, newCustomerEntry]);
-    
-    // Reset form
+    // Reset do formulário apenas se o cliente foi adicionado com sucesso
     setNewCustomer({
       name: "",
       phone: "",
       email: "",
       cpf: "",
     });
-    
-    // Close dialog
-    setOpen(false);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Clientes</h2>
         
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2 w-full sm:w-auto">
               <Plus className="h-4 w-4" /> Novo Cliente
             </Button>
           </DialogTrigger>
@@ -105,8 +99,8 @@ const Customers = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="sm:text-right">
                     Nome
                   </Label>
                   <Input
@@ -114,12 +108,12 @@ const Customers = () => {
                     name="name"
                     value={newCustomer.name}
                     onChange={handleInputChange}
-                    className="col-span-3"
+                    className="col-span-1 sm:col-span-3"
                     required
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="phone" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+                  <Label htmlFor="phone" className="sm:text-right">
                     Telefone
                   </Label>
                   <Input
@@ -127,13 +121,13 @@ const Customers = () => {
                     name="phone"
                     value={newCustomer.phone}
                     onChange={handleInputChange}
-                    className="col-span-3"
+                    className="col-span-1 sm:col-span-3"
                     placeholder="(00) 00000-0000"
                     required
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="email" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+                  <Label htmlFor="email" className="sm:text-right">
                     E-mail
                   </Label>
                   <Input
@@ -142,12 +136,12 @@ const Customers = () => {
                     type="email"
                     value={newCustomer.email}
                     onChange={handleInputChange}
-                    className="col-span-3"
+                    className="col-span-1 sm:col-span-3"
                     required
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="cpf" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+                  <Label htmlFor="cpf" className="sm:text-right">
                     CPF
                   </Label>
                   <Input
@@ -155,17 +149,23 @@ const Customers = () => {
                     name="cpf"
                     value={newCustomer.cpf}
                     onChange={handleInputChange}
-                    className="col-span-3"
+                    className="col-span-1 sm:col-span-3"
                     placeholder="000.000.000-00"
                     required
                   />
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>
+              <DialogFooter className="flex-col sm:flex-row gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setDialogOpen(false)}
+                  className="w-full sm:w-auto"
+                >
                   Cancelar
                 </Button>
-                <Button type="submit">Salvar</Button>
+                <Button type="submit" className="w-full sm:w-auto">
+                  Salvar
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -185,22 +185,31 @@ const Customers = () => {
         </div>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Telefone</TableHead>
-              <TableHead>E-mail</TableHead>
-              <TableHead>CPF</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
+              <TableHead className="min-w-[150px]">Nome</TableHead>
+              <TableHead className="min-w-[120px]">Telefone</TableHead>
+              <TableHead className="min-w-[200px]">E-mail</TableHead>
+              <TableHead className="min-w-[120px]">CPF</TableHead>
+              <TableHead className="min-w-[120px]">Data de Cadastro</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredCustomers.length === 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-6">
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Carregando clientes...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : filteredCustomers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                  Nenhum cliente encontrado.
+                  {searchTerm ? "Nenhum cliente encontrado para a busca." : "Nenhum cliente cadastrado."}
                 </TableCell>
               </TableRow>
             ) : (
