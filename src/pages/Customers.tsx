@@ -22,11 +22,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { Plus, Search, Loader2 } from "lucide-react";
+import { Plus, Search, Loader2, Pencil, Trash2 } from "lucide-react";
 import { useCustomerManagement } from "@/hooks/useCustomerManagement";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Customer } from "@/types";
 
 /**
@@ -37,46 +47,98 @@ const Customers = () => {
     filteredCustomers,
     searchTerm,
     dialogOpen,
+    editingCustomer,
     isLoading,
     setDialogOpen,
     handleSearch,
-    addCustomer
+    addCustomer,
+    updateCustomer,
+    deleteCustomer,
+    openEditDialog,
+    closeDialog
   } = useCustomerManagement();
 
-  // Estado para o formulário de novo cliente
-  const [newCustomer, setNewCustomer] = useState({
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null);
+  const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
     cpf: "",
   });
 
+  // Reset form when dialog opens/closes or editing customer changes
+  const resetForm = () => {
+    if (editingCustomer) {
+      setFormData({
+        name: editingCustomer.name,
+        phone: editingCustomer.phone,
+        email: editingCustomer.email,
+        cpf: editingCustomer.cpf,
+      });
+    } else {
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        cpf: "",
+      });
+    }
+  };
+
+  // Reset form when dialog state changes
+  useEffect(() => {
+    if (dialogOpen) {
+      resetForm();
+    }
+  }, [dialogOpen, editingCustomer]);
+
   /**
    * Manipula mudanças nos campos do formulário
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewCustomer(prev => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
   /**
-   * Submete o formulário de novo cliente
+   * Submete o formulário de cliente
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    await addCustomer(newCustomer);
-    
-    // Reset do formulário apenas se o cliente foi adicionado com sucesso
-    setNewCustomer({
-      name: "",
-      phone: "",
-      email: "",
-      cpf: "",
-    });
+    // Form validation
+    if (!formData.name.trim() || !formData.phone.trim() || 
+        !formData.email.trim() || !formData.cpf.trim()) {
+      return;
+    }
+
+    if (editingCustomer) {
+      await updateCustomer(editingCustomer.id, formData);
+    } else {
+      await addCustomer(formData);
+    }
+  };
+
+  const handleDeleteClick = (customer: Customer) => {
+    setCustomerToDelete(customer);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (customerToDelete) {
+      await deleteCustomer(customerToDelete.id);
+      setDeleteDialogOpen(false);
+      setCustomerToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setCustomerToDelete(null);
   };
 
   return (
@@ -93,9 +155,14 @@ const Customers = () => {
           <DialogContent className="sm:max-w-[500px]">
             <form onSubmit={handleSubmit}>
               <DialogHeader>
-                <DialogTitle>Adicionar Novo Cliente</DialogTitle>
+                <DialogTitle>
+                  {editingCustomer ? "Editar Cliente" : "Adicionar Novo Cliente"}
+                </DialogTitle>
                 <DialogDescription>
-                  Preencha os dados do cliente abaixo.
+                  {editingCustomer 
+                    ? "Atualize os dados do cliente abaixo." 
+                    : "Preencha os dados do cliente abaixo."
+                  }
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -106,7 +173,7 @@ const Customers = () => {
                   <Input
                     id="name"
                     name="name"
-                    value={newCustomer.name}
+                    value={formData.name}
                     onChange={handleInputChange}
                     className="col-span-1 sm:col-span-3"
                     required
@@ -119,7 +186,7 @@ const Customers = () => {
                   <Input
                     id="phone"
                     name="phone"
-                    value={newCustomer.phone}
+                    value={formData.phone}
                     onChange={handleInputChange}
                     className="col-span-1 sm:col-span-3"
                     placeholder="(00) 00000-0000"
@@ -134,7 +201,7 @@ const Customers = () => {
                     id="email"
                     name="email"
                     type="email"
-                    value={newCustomer.email}
+                    value={formData.email}
                     onChange={handleInputChange}
                     className="col-span-1 sm:col-span-3"
                     required
@@ -147,7 +214,7 @@ const Customers = () => {
                   <Input
                     id="cpf"
                     name="cpf"
-                    value={newCustomer.cpf}
+                    value={formData.cpf}
                     onChange={handleInputChange}
                     className="col-span-1 sm:col-span-3"
                     placeholder="000.000.000-00"
@@ -158,13 +225,14 @@ const Customers = () => {
               <DialogFooter className="flex-col sm:flex-row gap-2">
                 <Button 
                   variant="outline" 
-                  onClick={() => setDialogOpen(false)}
+                  type="button"
+                  onClick={closeDialog}
                   className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
                 <Button type="submit" className="w-full sm:w-auto">
-                  Salvar
+                  {editingCustomer ? "Atualizar" : "Salvar"}
                 </Button>
               </DialogFooter>
             </form>
@@ -194,12 +262,13 @@ const Customers = () => {
               <TableHead className="min-w-[200px]">E-mail</TableHead>
               <TableHead className="min-w-[120px]">CPF</TableHead>
               <TableHead className="min-w-[120px]">Data de Cadastro</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-6">
+                <TableCell colSpan={6} className="text-center py-6">
                   <div className="flex items-center justify-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Carregando clientes...
@@ -208,13 +277,13 @@ const Customers = () => {
               </TableRow>
             ) : filteredCustomers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
                   {searchTerm ? "Nenhum cliente encontrado para a busca." : "Nenhum cliente cadastrado."}
                 </TableCell>
               </TableRow>
             ) : (
               filteredCustomers.map((customer) => (
-                <TableRow key={customer.id} className="cursor-pointer hover:bg-muted/50">
+                <TableRow key={customer.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>{customer.email}</TableCell>
@@ -222,12 +291,50 @@ const Customers = () => {
                   <TableCell>
                     {format(customer.createdAt, "dd/MM/yyyy")}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openEditDialog(customer)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteClick(customer)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o cliente "{customerToDelete?.name}"? 
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
