@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
@@ -18,13 +17,14 @@ import { Employee } from "@/types";
 interface EmployeeFormProps {
   onSubmit: (employee: Omit<Employee, "id">) => void;
   onCancel: () => void;
+  initialData?: Employee | null; // Add support for initial data
 }
 
 /**
- * Formulário para cadastro de novos funcionários
+ * Formulário para cadastro e edição de funcionários
  * Permite inserir dados pessoais, profissionais e configurações de comissão
  */
-export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
+export const EmployeeForm = ({ onSubmit, onCancel, initialData }: EmployeeFormProps) => {
   const [newEmployee, setNewEmployee] = useState<{
     name: string;
     role: string;
@@ -35,14 +35,14 @@ export const EmployeeForm = ({ onSubmit, onCancel }: EmployeeFormProps) => {
     salary: number;
     commissionType: "fixed" | "percentage" | "mixed";
   }>({
-    name: "",
-    role: "",
-    phone: "",
-    email: "",
-    document: "",
-    joinDate: format(new Date(), "yyyy-MM-dd"),
-    salary: 0,
-    commissionType: "percentage",
+    name: initialData?.name || "",
+    role: initialData?.role || "",
+    phone: initialData?.phone || "",
+    email: initialData?.email || "",
+    document: initialData?.document || "",
+    joinDate: initialData ? format(initialData.joinDate, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
+    salary: initialData?.salary || 0,
+    commissionType: initialData?.commissionType || "percentage",
   });
 
   /**

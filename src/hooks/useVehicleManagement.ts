@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { Vehicle } from "@/types";
+import { Vehicle, VehicleType } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useErrorHandler } from "@/components/ErrorBoundary";
@@ -36,10 +35,9 @@ export const useVehicleManagement = () => {
         model: vehicle.model,
         year: vehicle.year,
         color: vehicle.color,
-        type: vehicle.type,
+        type: vehicle.type as VehicleType, // Cast to VehicleType
         customerId: vehicle.customer_id,
         customerName: vehicle.customers?.name || "",
-        createdAt: new Date(vehicle.created_at),
       }));
 
       setVehicles(formattedVehicles);
@@ -55,7 +53,7 @@ export const useVehicleManagement = () => {
     }
   };
 
-  const addVehicle = async (vehicleData: Omit<Vehicle, "id" | "createdAt" | "customerName">) => {
+  const addVehicle = async (vehicleData: Omit<Vehicle, "id" | "customerName">) => {
     try {
       const { data, error } = await supabase
         .from("vehicles")
@@ -65,7 +63,7 @@ export const useVehicleManagement = () => {
           model: vehicleData.model,
           year: vehicleData.year,
           color: vehicleData.color,
-          type: vehicleData.type,
+          type: vehicleData.type as string, // Cast to string for database
           customer_id: vehicleData.customerId,
         }])
         .select(`
@@ -85,10 +83,9 @@ export const useVehicleManagement = () => {
         model: data.model,
         year: data.year,
         color: data.color,
-        type: data.type,
+        type: data.type as VehicleType, // Cast to VehicleType
         customerId: data.customer_id,
         customerName: data.customers?.name || "",
-        createdAt: new Date(data.created_at),
       };
 
       setVehicles(prev => [...prev, newVehicle]);
@@ -108,7 +105,7 @@ export const useVehicleManagement = () => {
     }
   };
 
-  const updateVehicle = async (id: string, vehicleData: Omit<Vehicle, "id" | "createdAt" | "customerName">) => {
+  const updateVehicle = async (id: string, vehicleData: Omit<Vehicle, "id" | "customerName">) => {
     try {
       const { data, error } = await supabase
         .from("vehicles")
@@ -118,7 +115,7 @@ export const useVehicleManagement = () => {
           model: vehicleData.model,
           year: vehicleData.year,
           color: vehicleData.color,
-          type: vehicleData.type,
+          type: vehicleData.type as string, // Cast to string for database
           customer_id: vehicleData.customerId,
         })
         .eq("id", id)
@@ -139,10 +136,9 @@ export const useVehicleManagement = () => {
         model: data.model,
         year: data.year,
         color: data.color,
-        type: data.type,
+        type: data.type as VehicleType, // Cast to VehicleType
         customerId: data.customer_id,
         customerName: data.customers?.name || "",
-        createdAt: new Date(data.created_at),
       };
 
       setVehicles(prev => prev.map(v => v.id === id ? updatedVehicle : v));
@@ -192,7 +188,7 @@ export const useVehicleManagement = () => {
     vehicle.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vehicle.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vehicle.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vehicle.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+    (vehicle.customerName && vehicle.customerName.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {

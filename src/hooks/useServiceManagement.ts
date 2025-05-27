@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Service } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
@@ -162,7 +161,7 @@ export const useServiceManagement = () => {
 
   const filteredServices = services.filter((service) =>
     service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.description.toLowerCase().includes(searchTerm.toLowerCase())
+    service.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
