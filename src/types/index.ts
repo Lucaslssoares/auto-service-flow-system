@@ -1,4 +1,3 @@
-
 export interface Customer {
   id: string;
   name: string;
@@ -17,6 +16,7 @@ export interface Vehicle {
   color: string;
   type: VehicleType;
   year?: number;
+  customerName?: string; // Add this optional property for display purposes
 }
 
 export type VehicleType = "car" | "motorcycle" | "truck" | "other";
@@ -28,6 +28,7 @@ export interface Service {
   price: number;
   duration: number; // in minutes
   commissionPercentage: number;
+  createdAt?: Date; // Add this optional property
 }
 
 export interface Employee {
