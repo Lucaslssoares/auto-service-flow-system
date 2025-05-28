@@ -6,31 +6,35 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import {
-  getFilteredAppointments,
-  calculateTotalRevenue,
-  calculateEmployeeCommissions,
-  prepareChartData
-} from "@/components/finance/FinancePageUtils";
+import { useFinanceData } from "@/components/finance/FinancePageUtils";
 import { DateRangeSelector } from "@/components/finance/DateRangeSelector";
 import { OverviewTabContent } from "@/components/finance/OverviewTabContent";
 import { ServicesTabContent } from "@/components/finance/ServicesTabContent";
 import { CommissionsTabContent } from "@/components/finance/CommissionsTabContent";
+import { Loader2 } from "lucide-react";
 
 const FinancePage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("today");
   
-  // Get filtered appointments for the selected period
-  const completedAppointments = getFilteredAppointments(selectedPeriod, ["completed"]);
-  
-  // Calculate total revenue
-  const totalRevenue = calculateTotalRevenue(completedAppointments);
-  
-  // Calculate employee commissions
-  const employeeCommissions = calculateEmployeeCommissions(completedAppointments);
-  
-  // Prepare chart data
-  const chartData = prepareChartData(completedAppointments);
+  // Get finance data using the new hook
+  const { 
+    completedAppointments, 
+    totalRevenue, 
+    employeeCommissions, 
+    chartData, 
+    isLoading 
+  } = useFinanceData(selectedPeriod);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Carregando dados financeiros...</span>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
