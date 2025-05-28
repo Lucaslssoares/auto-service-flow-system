@@ -50,6 +50,7 @@ export type Database = {
           created_at: string | null
           customer_id: string | null
           date: string
+          employee_id: string | null
           id: string
           notes: string | null
           status: string
@@ -60,6 +61,7 @@ export type Database = {
           created_at?: string | null
           customer_id?: string | null
           date: string
+          employee_id?: string | null
           id?: string
           notes?: string | null
           status: string
@@ -70,6 +72,7 @@ export type Database = {
           created_at?: string | null
           customer_id?: string | null
           date?: string
+          employee_id?: string | null
           id?: string
           notes?: string | null
           status?: string
@@ -82,6 +85,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
           {

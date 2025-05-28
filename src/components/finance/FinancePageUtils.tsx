@@ -1,102 +1,176 @@
 
-import { appointments, employees, services } from "@/data/mockData";
-import { AppointmentStatus } from "@/types";
-import { startOfDay, subDays, addDays, isBefore, isAfter, isEqual } from "date-fns";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { startOfDay, endOfDay, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
-// Get today's date at start of day
-export const today = startOfDay(new Date());
+export const useFinanceData = (selectedPeriod: string) => {
+  // Get date range based on selected period
+  const getDateRange = (period: string) => {
+    const now = new Date();
+    
+    switch (period) {
+      case "today":
+        return { start: startOfDay(now), end: endOfDay(now) };
+      case "yesterday":
+        const yesterday = subDays(now, 1);
+        return { start: startOfDay(yesterday), end: endOfDay(yesterday) };
+      case "week":
+        return { start: startOfWeek(now), end: endOfWeek(now) };
+      case "month":
+        return { start: startOfMonth(now), end: endOfMonth(now) };
+      case "last7days":
+        return { start: startOfDay(subDays(now, 6)), end: endOfDay(now) };
+      case "last30days":
+        return { start: startOfDay(subDays(now, 29)), end: endOfDay(now) };
+      default:
+        return { start: startOfDay(now), end: endOfDay(now) };
+    }
+  };
 
-// Calculate date ranges based on period
-export const getDateRange = (selectedPeriod: string) => {
-  switch (selectedPeriod) {
-    case "today":
-      return { start: today, end: addDays(today, 1) };
-    case "yesterday":
-      return { start: subDays(today, 1), end: today };
-    case "week":
-      return { start: subDays(today, 7), end: addDays(today, 1) };
-    case "month":
-      return { start: subDays(today, 30), end: addDays(today, 1) };
-    default:
-      return { start: today, end: addDays(today, 1) };
-  }
-};
-
-// Filter appointments based on date range and status
-export const getFilteredAppointments = (selectedPeriod: string, status?: AppointmentStatus[]) => {
   const { start, end } = getDateRange(selectedPeriod);
-  
-  return appointments.filter(app => {
-    const appDate = startOfDay(app.date);
-    const dateInRange = (isAfter(appDate, start) || isEqual(appDate, start)) && isBefore(appDate, end);
-    
-    if (status) {
-      return dateInRange && status.includes(app.status);
-    }
-    
-    return dateInRange;
-  });
-};
 
-// Calculate total revenue for the period
-export const calculateTotalRevenue = (apps = []) => {
-  return apps.reduce((total, app) => total + app.totalPrice, 0);
-};
+  // Fetch completed appointments with financial data
+  const { data: completedAppointments = [], isLoading } = useQuery({
+    queryKey: ['finance_appointments', selectedPeriod, start, end],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          customers(name),
+          vehicles(plate, model, brand),
+          employees(name),
+          appointment_services(
+            services(id, name, price, commission_percentage)
+          ),
+          service_executions(
+            employee_id,
+            employees(name)
+          )
+        `)
+        .eq('status', 'completed')
+        .gte('date', start.toISOString())
+        .lte('date', end.toISOString())
+        .order('date', { ascending: false });
 
-// Calculate commission for each employee
-export const calculateEmployeeCommissions = (completedAppointments: typeof appointments) => {
-  const commissions: Record<string, number> = {};
-  
-  completedAppointments.forEach(app => {
-    const employee = employees.find(e => e.id === app.employeeId);
-    if (!employee) return;
-    
-    // Get services for this appointment
-    const appServices = app.serviceIds.map(
-      serviceId => services.find(s => s.id === serviceId)
-    ).filter(Boolean);
-    
-    // Calculate commission based on employee's commission type and services
-    let commission = 0;
-    
-    appServices.forEach(service => {
-      if (!service) return;
-      
-      if (employee.commissionType === "percentage" || employee.commissionType === "mixed") {
-        commission += (service.price * service.commissionPercentage) / 100;
-      }
-    });
-    
-    // Add to employee's commission
-    if (commissions[employee.id]) {
-      commissions[employee.id] += commission;
-    } else {
-      commissions[employee.id] = commission;
+      if (error) throw error;
+
+      return data.map((appointment: any) => ({
+        id: appointment.id,
+        customerId: appointment.customer_id,
+        customerName: appointment.customers?.name || 'Cliente não encontrado',
+        vehicleId: appointment.vehicle_id,
+        vehicleInfo: appointment.vehicles 
+          ? `${appointment.vehicles.brand} ${appointment.vehicles.model} - ${appointment.vehicles.plate}`
+          : 'Veículo não encontrado',
+        services: appointment.appointment_services?.map((as: any) => as.services) || [],
+        employeeId: appointment.employee_id,
+        employeeName: appointment.employees?.name || 'Funcionário não encontrado',
+        date: new Date(appointment.date),
+        status: appointment.status,
+        notes: appointment.notes || '',
+        totalPrice: Number(appointment.total_price),
+        serviceExecutions: appointment.service_executions || []
+      }));
     }
   });
-  
-  return commissions;
-};
 
-// Prepare data for the chart
-export const prepareChartData = (completedAppointments: typeof appointments) => {
-  const serviceData: Record<string, number> = {};
-  
-  completedAppointments.forEach(app => {
-    app.serviceIds.forEach(serviceId => {
-      const service = services.find(s => s.id === serviceId);
-      if (!service) return;
+  // Calculate total revenue
+  const totalRevenue = completedAppointments.reduce((sum, appointment) => sum + appointment.totalPrice, 0);
+
+  // Calculate employee commissions
+  const employeeCommissions = completedAppointments.reduce((acc: any[], appointment) => {
+    appointment.services?.forEach((service: any) => {
+      const commission = (service.price * service.commission_percentage) / 100;
+      const existingEmployee = acc.find(emp => emp.employeeId === appointment.employeeId);
       
-      if (serviceData[service.name]) {
-        serviceData[service.name] += service.price;
+      if (existingEmployee) {
+        existingEmployee.totalCommission += commission;
+        existingEmployee.serviceCount += 1;
       } else {
-        serviceData[service.name] = service.price;
+        acc.push({
+          employeeId: appointment.employeeId,
+          employeeName: appointment.employeeName,
+          totalCommission: commission,
+          serviceCount: 1
+        });
       }
     });
-  });
-  
-  return Object.keys(serviceData).map(name => ({
-    name,
-    valor: serviceData[name]
-  }));
+    return acc;
+  }, []);
+
+  // Prepare chart data - revenue by day
+  const chartData = completedAppointments.reduce((acc: any[], appointment) => {
+    const dateKey = appointment.date.toISOString().split('T')[0];
+    const existingDay = acc.find(day => day.date === dateKey);
+    
+    if (existingDay) {
+      existingDay.revenue += appointment.totalPrice;
+    } else {
+      acc.push({
+        date: dateKey,
+        revenue: appointment.totalPrice,
+        appointments: 1
+      });
+    }
+    return acc;
+  }, []);
+
+  return {
+    completedAppointments,
+    totalRevenue,
+    employeeCommissions,
+    chartData,
+    isLoading
+  };
+};
+
+// Legacy functions for backward compatibility
+export const getFilteredAppointments = (period: string, statuses: string[]) => {
+  // This is now handled by the hook above
+  return [];
+};
+
+export const calculateTotalRevenue = (appointments: any[]) => {
+  return appointments.reduce((sum, appointment) => sum + appointment.totalPrice, 0);
+};
+
+export const calculateEmployeeCommissions = (appointments: any[]) => {
+  return appointments.reduce((acc: any[], appointment) => {
+    appointment.services?.forEach((service: any) => {
+      const commission = (service.price * service.commission_percentage) / 100;
+      const existingEmployee = acc.find((emp: any) => emp.employeeId === appointment.employeeId);
+      
+      if (existingEmployee) {
+        existingEmployee.totalCommission += commission;
+        existingEmployee.serviceCount += 1;
+      } else {
+        acc.push({
+          employeeId: appointment.employeeId,
+          employeeName: appointment.employeeName,
+          totalCommission: commission,
+          serviceCount: 1
+        });
+      }
+    });
+    return acc;
+  }, []);
+};
+
+export const prepareChartData = (appointments: any[]) => {
+  return appointments.reduce((acc: any[], appointment) => {
+    const dateKey = appointment.date.toISOString().split('T')[0];
+    const existingDay = acc.find((day: any) => day.date === dateKey);
+    
+    if (existingDay) {
+      existingDay.revenue += appointment.totalPrice;
+    } else {
+      acc.push({
+        date: dateKey,
+        revenue: appointment.totalPrice,
+        appointments: 1
+      });
+    }
+    return acc;
+  }, []);
 };
