@@ -130,6 +130,74 @@ export type Database = {
         }
         Relationships: []
       }
+      employee_commissions: {
+        Row: {
+          appointment_id: string | null
+          base_price: number
+          commission_amount: number
+          commission_percentage: number
+          created_at: string
+          employee_id: string | null
+          id: string
+          profit_percentage: number
+          service_execution_id: string | null
+          service_id: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          base_price: number
+          commission_amount: number
+          commission_percentage: number
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          profit_percentage: number
+          service_execution_id?: string | null
+          service_id?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          base_price?: number
+          commission_amount?: number
+          commission_percentage?: number
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          profit_percentage?: number
+          service_execution_id?: string | null
+          service_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_commissions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_commissions_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_commissions_service_execution_id_fkey"
+            columns: ["service_execution_id"]
+            isOneToOne: false
+            referencedRelation: "service_executions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_commissions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employees: {
         Row: {
           commission_type: string
@@ -377,10 +445,59 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      employee_commission_summary: {
+        Row: {
+          appointment_date: string | null
+          appointment_id: string | null
+          base_price: number | null
+          commission_amount: number | null
+          commission_percentage: number | null
+          created_at: string | null
+          customer_name: string | null
+          employee_id: string | null
+          employee_name: string | null
+          profit_percentage: number | null
+          service_id: string | null
+          service_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_commissions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_commissions_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_commissions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      calculate_employee_commission: {
+        Args: {
+          p_service_execution_id: string
+          p_employee_id: string
+          p_appointment_id: string
+          p_service_id: string
+          p_base_price: number
+          p_commission_percentage: number
+          p_profit_percentage: number
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

@@ -79,7 +79,8 @@ export const useServiceExecutions = () => {
           service_id: serviceId,
           employee_id: employeeId,
           start_time: new Date().toISOString(),
-          status: 'in-progress'
+          status: 'in-progress',
+          profit_percentage: 100
         });
 
       if (error) throw error;
@@ -118,12 +119,58 @@ export const useServiceExecutions = () => {
     }
   });
 
+  // Calculate commissions for service execution
+  const calculateCommissionMutation = useMutation({
+    mutationFn: async ({ 
+      serviceExecutionId, 
+      employeeId, 
+      appointmentId, 
+      serviceId, 
+      basePrice, 
+      commissionPercentage, 
+      profitPercentage 
+    }: {
+      serviceExecutionId: string;
+      employeeId: string;
+      appointmentId: string;
+      serviceId: string;
+      basePrice: number;
+      commissionPercentage: number;
+      profitPercentage: number;
+    }) => {
+      const { data, error } = await supabase
+        .rpc('calculate_employee_commission', {
+          p_service_execution_id: serviceExecutionId,
+          p_employee_id: employeeId,
+          p_appointment_id: appointmentId,
+          p_service_id: serviceId,
+          p_base_price: basePrice,
+          p_commission_percentage: commissionPercentage,
+          p_profit_percentage: profitPercentage
+        });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['service_executions'] });
+      queryClient.invalidateQueries({ queryKey: ['finance_appointments'] });
+      toast.success('Comissão calculada com sucesso!');
+    },
+    onError: (error) => {
+      console.error('Erro ao calcular comissão:', error);
+      toast.error('Erro ao calcular comissão');
+    }
+  });
+
   return {
     executions,
     isLoading,
     startExecution: startExecutionMutation.mutate,
     completeExecution: completeExecutionMutation.mutate,
+    calculateCommission: calculateCommissionMutation.mutate,
     isStarting: startExecutionMutation.isPending,
-    isCompleting: completeExecutionMutation.isPending
+    isCompleting: completeExecutionMutation.isPending,
+    isCalculating: calculateCommissionMutation.isPending
   };
 };
