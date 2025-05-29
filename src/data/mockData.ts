@@ -196,8 +196,27 @@ export const appointments: Appointment[] = [
   {
     id: "1",
     customerId: "1",
+    customerName: "João Silva",
     vehicleId: "1",
-    serviceIds: ["1", "5"],
+    vehicleInfo: "Volkswagen Gol (ABC-1234)",
+    services: [
+      {
+        id: "1",
+        name: "Lavagem Simples",
+        description: "Lavagem externa do veículo",
+        price: 40.00,
+        duration: 30,
+        commissionPercentage: 30
+      },
+      {
+        id: "5",
+        name: "Lavagem Motor",
+        description: "Limpeza do compartimento do motor",
+        price: 70.00,
+        duration: 45,
+        commissionPercentage: 25
+      }
+    ],
     employeeId: "1",
     date: new Date("2025-05-22T10:00:00"),
     status: "completed",
@@ -206,8 +225,19 @@ export const appointments: Appointment[] = [
   {
     id: "2",
     customerId: "2",
+    customerName: "Maria Oliveira",
     vehicleId: "3",
-    serviceIds: ["1"],
+    vehicleInfo: "Honda CG 160 (GHI-9012)",
+    services: [
+      {
+        id: "1",
+        name: "Lavagem Simples",
+        description: "Lavagem externa do veículo",
+        price: 40.00,
+        duration: 30,
+        commissionPercentage: 30
+      }
+    ],
     employeeId: "1",
     date: new Date("2025-05-22T11:30:00"),
     status: "completed",
@@ -216,8 +246,27 @@ export const appointments: Appointment[] = [
   {
     id: "3",
     customerId: "3",
+    customerName: "Carlos Santos",
     vehicleId: "4",
-    serviceIds: ["2", "3"],
+    vehicleInfo: "Toyota Hilux (JKL-3456)",
+    services: [
+      {
+        id: "2",
+        name: "Lavagem Completa",
+        description: "Lavagem externa e interna do veículo",
+        price: 80.00,
+        duration: 60,
+        commissionPercentage: 30
+      },
+      {
+        id: "3",
+        name: "Polimento",
+        description: "Polimento completo da pintura",
+        price: 150.00,
+        duration: 120,
+        commissionPercentage: 40
+      }
+    ],
     employeeId: "2",
     date: new Date("2025-05-22T14:00:00"),
     status: "in-progress",
@@ -226,8 +275,27 @@ export const appointments: Appointment[] = [
   {
     id: "4",
     customerId: "4",
+    customerName: "Ana Pereira",
     vehicleId: "5",
-    serviceIds: ["2", "4"],
+    vehicleInfo: "Honda Civic (MNO-7890)",
+    services: [
+      {
+        id: "2",
+        name: "Lavagem Completa",
+        description: "Lavagem externa e interna do veículo",
+        price: 80.00,
+        duration: 60,
+        commissionPercentage: 30
+      },
+      {
+        id: "4",
+        name: "Higienização Interna",
+        description: "Limpeza profunda dos estofados e carpetes",
+        price: 200.00,
+        duration: 180,
+        commissionPercentage: 35
+      }
+    ],
     employeeId: "2",
     date: new Date("2025-05-22T16:00:00"),
     status: "scheduled",
@@ -236,8 +304,19 @@ export const appointments: Appointment[] = [
   {
     id: "5",
     customerId: "1",
+    customerName: "João Silva",
     vehicleId: "2",
-    serviceIds: ["1"],
+    vehicleInfo: "Chevrolet Onix (DEF-5678)",
+    services: [
+      {
+        id: "1",
+        name: "Lavagem Simples",
+        description: "Lavagem externa do veículo",
+        price: 40.00,
+        duration: 30,
+        commissionPercentage: 30
+      }
+    ],
     employeeId: "1",
     date: new Date("2025-05-23T09:30:00"),
     status: "scheduled",

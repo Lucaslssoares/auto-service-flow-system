@@ -4,10 +4,17 @@ import { SummaryCards } from "./SummaryCards";
 import { RevenueByServiceChart } from "./RevenueByServiceChart";
 import { RecentServicesTable } from "./RecentServicesTable";
 
+interface EmployeeCommission {
+  employeeId: string;
+  employeeName: string;
+  totalCommission: number;
+  serviceCount: number;
+}
+
 interface OverviewTabContentProps {
   completedAppointments: any[];
   totalRevenue: number;
-  employeeCommissions: any[];
+  employeeCommissions: EmployeeCommission[];
   chartData: Array<{ name: string; valor: number }>;
 }
 

@@ -4,8 +4,15 @@ import { CommissionsTable } from "./CommissionsTable";
 import { TopEmployeesRanking } from "./TopEmployeesRanking";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+interface EmployeeCommission {
+  employeeId: string;
+  employeeName: string;
+  totalCommission: number;
+  serviceCount: number;
+}
+
 interface CommissionsTabContentProps {
-  employeeCommissions: any[];
+  employeeCommissions: EmployeeCommission[];
   completedAppointments: any[];
 }
 
