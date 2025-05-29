@@ -1,3 +1,4 @@
+
 export interface Customer {
   id: string;
   name: string;
@@ -46,8 +47,10 @@ export interface Employee {
 export interface Appointment {
   id: string;
   customerId: string;
+  customerName: string; // Added for display
   vehicleId: string;
-  serviceIds: string[];
+  vehicleInfo: string; // Added for display
+  services: Service[]; // Changed from serviceIds to services array
   employeeId: string;
   date: Date;
   status: AppointmentStatus;

@@ -7,7 +7,7 @@ import { RecentServicesTable } from "./RecentServicesTable";
 interface OverviewTabContentProps {
   completedAppointments: any[];
   totalRevenue: number;
-  employeeCommissions: Record<string, number>;
+  employeeCommissions: any[];
   chartData: Array<{ name: string; valor: number }>;
 }
 
