@@ -18,13 +18,26 @@ import {
 } from "@/components/ui/table";
 import { useAppointments } from "@/hooks/useAppointments";
 import { useServiceExecutions } from "@/hooks/useServiceExecutions";
+import { TeamWorkModal } from "@/components/employees/TeamWorkModal";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Loader2 } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 
 const ExecutionPage = () => {
   const { appointments, updateStatus, isLoading: appointmentsLoading } = useAppointments();
   const { executions, startExecution, completeExecution, isLoading: executionsLoading } = useServiceExecutions();
+  
+  const [teamWorkModal, setTeamWorkModal] = useState<{
+    isOpen: boolean;
+    appointmentId: string;
+    serviceId: string;
+    serviceName: string;
+  }>({
+    isOpen: false,
+    appointmentId: "",
+    serviceId: "",
+    serviceName: ""
+  });
 
   // Filter appointments that are scheduled or in-progress
   const activeAppointments = appointments
@@ -35,6 +48,26 @@ const ExecutionPage = () => {
   const todayAppointments = activeAppointments.filter(
     app => format(app.date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
   );
+
+  // Function to open team work modal
+  const openTeamWorkModal = (appointmentId: string, serviceId: string, serviceName: string) => {
+    setTeamWorkModal({
+      isOpen: true,
+      appointmentId,
+      serviceId,
+      serviceName
+    });
+  };
+
+  // Function to close team work modal
+  const closeTeamWorkModal = () => {
+    setTeamWorkModal({
+      isOpen: false,
+      appointmentId: "",
+      serviceId: "",
+      serviceName: ""
+    });
+  };
 
   // Function to get action buttons based on status
   const getActionButtons = (app: typeof appointments[0]) => {
@@ -69,6 +102,21 @@ const ExecutionPage = () => {
     }
     
     return null;
+  };
+
+  // Function to get service actions (team work button)
+  const getServiceActions = (appointmentId: string, service: any) => {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => openTeamWorkModal(appointmentId, service.id, service.name)}
+        className="flex items-center gap-1"
+      >
+        <Users className="h-3 w-3" />
+        Equipe
+      </Button>
+    );
   };
 
   const getStatusBadgeClass = (status: string) => {
@@ -147,11 +195,12 @@ const ExecutionPage = () => {
                         <TableCell>{app.customerName}</TableCell>
                         <TableCell>{app.vehicleInfo}</TableCell>
                         <TableCell>
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col gap-2">
                             {app.services?.map(service => (
-                              <span key={service.id} className="text-xs">
-                                {service.name}
-                              </span>
+                              <div key={service.id} className="flex items-center justify-between">
+                                <span className="text-xs">{service.name}</span>
+                                {getServiceActions(app.id, service)}
+                              </div>
                             )) || <span className="text-xs text-muted-foreground">Nenhum serviço</span>}
                           </div>
                         </TableCell>
@@ -197,11 +246,12 @@ const ExecutionPage = () => {
                         <TableCell>{app.customerName}</TableCell>
                         <TableCell>{app.vehicleInfo}</TableCell>
                         <TableCell>
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col gap-2">
                             {app.services?.map(service => (
-                              <span key={service.id} className="text-xs">
-                                {service.name}
-                              </span>
+                              <div key={service.id} className="flex items-center justify-between">
+                                <span className="text-xs">{service.name}</span>
+                                {getServiceActions(app.id, service)}
+                              </div>
                             )) || <span className="text-xs text-muted-foreground">Nenhum serviço</span>}
                           </div>
                         </TableCell>
@@ -249,11 +299,12 @@ const ExecutionPage = () => {
                     <TableCell>{app.customerName}</TableCell>
                     <TableCell>{app.vehicleInfo}</TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-2">
                         {app.services?.map(service => (
-                          <span key={service.id} className="text-xs">
-                            {service.name}
-                          </span>
+                          <div key={service.id} className="flex items-center justify-between">
+                            <span className="text-xs">{service.name}</span>
+                            {getServiceActions(app.id, service)}
+                          </div>
                         )) || <span className="text-xs text-muted-foreground">Nenhum serviço</span>}
                       </div>
                     </TableCell>
@@ -270,6 +321,14 @@ const ExecutionPage = () => {
           )}
         </CardContent>
       </Card>
+
+      <TeamWorkModal
+        isOpen={teamWorkModal.isOpen}
+        onClose={closeTeamWorkModal}
+        appointmentId={teamWorkModal.appointmentId}
+        serviceId={teamWorkModal.serviceId}
+        serviceName={teamWorkModal.serviceName}
+      />
     </div>
   );
 };

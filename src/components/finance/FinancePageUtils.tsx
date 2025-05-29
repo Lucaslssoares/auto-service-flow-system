@@ -45,6 +45,7 @@ export const useFinanceData = (selectedPeriod: string) => {
           ),
           service_executions(
             employee_id,
+            profit_percentage,
             employees(name)
           )
         `)
@@ -78,24 +79,51 @@ export const useFinanceData = (selectedPeriod: string) => {
   // Calculate total revenue
   const totalRevenue = completedAppointments.reduce((sum, appointment) => sum + appointment.totalPrice, 0);
 
-  // Calculate employee commissions
+  // Calculate employee commissions based on service executions and profit sharing
   const employeeCommissions = completedAppointments.reduce((acc: any[], appointment) => {
-    appointment.services?.forEach((service: any) => {
-      const commission = (service.price * service.commission_percentage) / 100;
-      const existingEmployee = acc.find(emp => emp.employeeId === appointment.employeeId);
+    // Group service executions by employee
+    const executionsByEmployee = appointment.serviceExecutions.reduce((empAcc: any, execution: any) => {
+      const employeeId = execution.employee_id;
+      const employeeName = execution.employees?.name || 'Funcionário não encontrado';
+      
+      if (!empAcc[employeeId]) {
+        empAcc[employeeId] = {
+          employeeId,
+          employeeName,
+          totalCommission: 0,
+          serviceCount: 0
+        };
+      }
+      
+      // Find the service for this execution
+      const service = appointment.services?.find((s: any) => 
+        appointment.appointment_services?.some((as: any) => as.service_id === s.id)
+      );
+      
+      if (service) {
+        // Calculate commission based on profit percentage
+        const baseCommission = (service.price * service.commission_percentage) / 100;
+        const actualCommission = (baseCommission * execution.profit_percentage) / 100;
+        
+        empAcc[employeeId].totalCommission += actualCommission;
+        empAcc[employeeId].serviceCount += 1;
+      }
+      
+      return empAcc;
+    }, {});
+
+    // Add to accumulator
+    Object.values(executionsByEmployee).forEach((empData: any) => {
+      const existingEmployee = acc.find(emp => emp.employeeId === empData.employeeId);
       
       if (existingEmployee) {
-        existingEmployee.totalCommission += commission;
-        existingEmployee.serviceCount += 1;
+        existingEmployee.totalCommission += empData.totalCommission;
+        existingEmployee.serviceCount += empData.serviceCount;
       } else {
-        acc.push({
-          employeeId: appointment.employeeId,
-          employeeName: appointment.employeeName,
-          totalCommission: commission,
-          serviceCount: 1
-        });
+        acc.push(empData);
       }
     });
+
     return acc;
   }, []);
 
