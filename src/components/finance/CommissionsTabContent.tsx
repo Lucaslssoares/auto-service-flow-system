@@ -5,7 +5,7 @@ import { TopEmployeesRanking } from "./TopEmployeesRanking";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CommissionsTabContentProps {
-  employeeCommissions: Record<string, number>;
+  employeeCommissions: any[];
   completedAppointments: any[];
 }
 
