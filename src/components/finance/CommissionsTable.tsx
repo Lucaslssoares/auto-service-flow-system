@@ -21,8 +21,15 @@ import { employees } from "@/data/mockData";
 import { ExportButton } from "@/components/common/ExportButton";
 import { formatCurrencyForExport } from "@/utils/exportUtils";
 
+interface EmployeeCommission {
+  employeeId: string;
+  employeeName: string;
+  totalCommission: number;
+  serviceCount: number;
+}
+
 interface CommissionsTableProps {
-  employeeCommissions: Record<string, number>;
+  employeeCommissions: EmployeeCommission[];
   completedAppointments: any[];
 }
 
@@ -31,21 +38,16 @@ export const CommissionsTable = ({
   completedAppointments 
 }: CommissionsTableProps) => {
   // Preparar dados para exportação
-  const exportData = Object.keys(employeeCommissions).map(employeeId => {
-    const employee = employees.find(e => e.id === employeeId);
+  const exportData = employeeCommissions.map(emp => {
+    const employee = employees.find(e => e.id === emp.employeeId);
     if (!employee) return null;
     
-    const servicesCount = completedAppointments
-      .filter(app => app.employeeId === employeeId)
-      .reduce((count, app) => count + app.serviceIds.length, 0);
-    
-    const commission = employeeCommissions[employeeId];
-    const totalPay = employee.salary + commission;
+    const totalPay = employee.salary + emp.totalCommission;
     
     return {
-      Funcionário: employee.name,
-      'Serviços Realizados': servicesCount,
-      Comissão: formatCurrencyForExport(commission),
+      Funcionário: emp.employeeName,
+      'Serviços Realizados': emp.serviceCount,
+      Comissão: formatCurrencyForExport(emp.totalCommission),
       'Salário Base': formatCurrencyForExport(employee.salary),
       Total: formatCurrencyForExport(totalPay)
     };
@@ -60,7 +62,7 @@ export const CommissionsTable = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {Object.keys(employeeCommissions).length === 0 ? (
+        {employeeCommissions.length === 0 ? (
           <div className="text-center py-6 text-muted-foreground">
             Nenhuma comissão no período selecionado
           </div>
@@ -76,24 +78,18 @@ export const CommissionsTable = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Object.keys(employeeCommissions).map(employeeId => {
-                const employee = employees.find(e => e.id === employeeId);
+              {employeeCommissions.map(emp => {
+                const employee = employees.find(e => e.id === emp.employeeId);
                 if (!employee) return null;
                 
-                // Count services by this employee
-                const servicesCount = completedAppointments
-                  .filter(app => app.employeeId === employeeId)
-                  .reduce((count, app) => count + app.serviceIds.length, 0);
-                
-                const commission = employeeCommissions[employeeId];
-                const totalPay = employee.salary + commission;
+                const totalPay = employee.salary + emp.totalCommission;
                 
                 return (
-                  <TableRow key={employeeId}>
-                    <TableCell>{employee.name}</TableCell>
-                    <TableCell className="text-right">{servicesCount}</TableCell>
+                  <TableRow key={emp.employeeId}>
+                    <TableCell>{emp.employeeName}</TableCell>
+                    <TableCell className="text-right">{emp.serviceCount}</TableCell>
                     <TableCell className="text-right">
-                      R$ {commission.toFixed(2).replace(".", ",")}
+                      R$ {emp.totalCommission.toFixed(2).replace(".", ",")}
                     </TableCell>
                     <TableCell className="text-right">
                       R$ {employee.salary.toFixed(2).replace(".", ",")}

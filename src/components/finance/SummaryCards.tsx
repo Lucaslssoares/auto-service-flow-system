@@ -8,10 +8,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+interface EmployeeCommission {
+  employeeId: string;
+  employeeName: string;
+  totalCommission: number;
+  serviceCount: number;
+}
+
 interface SummaryCardsProps {
   totalRevenue: number;
   completedAppointments: any[];
-  employeeCommissions: Record<string, number>;
+  employeeCommissions: EmployeeCommission[];
 }
 
 export const SummaryCards = ({
@@ -19,7 +26,7 @@ export const SummaryCards = ({
   completedAppointments,
   employeeCommissions,
 }: SummaryCardsProps) => {
-  const totalCommissions = Object.values(employeeCommissions).reduce((a, b) => a + b, 0);
+  const totalCommissions = employeeCommissions.reduce((sum, emp) => sum + emp.totalCommission, 0);
   
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
