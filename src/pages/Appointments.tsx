@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,14 +16,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Dialog } from "@/components/ui/dialog";
 import { Plus, Users, Loader2 } from "lucide-react";
 import { TeamWorkModal } from "@/components/employees/TeamWorkModal";
+import { AppointmentForm } from "@/components/appointments/AppointmentForm";
 import { useAppointments } from "@/hooks/useAppointments";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const Appointments = () => {
   const { appointments, isLoading, updateStatus } = useAppointments();
+  const [appointmentFormOpen, setAppointmentFormOpen] = useState(false);
   const [teamWorkModal, setTeamWorkModal] = useState<{
     isOpen: boolean;
     appointmentId: string;
@@ -100,7 +102,7 @@ const Appointments = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Agendamentos</h2>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={() => setAppointmentFormOpen(true)}>
           <Plus className="h-4 w-4" /> Novo Agendamento
         </Button>
       </div>
@@ -208,6 +210,10 @@ const Appointments = () => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={appointmentFormOpen} onOpenChange={setAppointmentFormOpen}>
+        <AppointmentForm onClose={() => setAppointmentFormOpen(false)} />
+      </Dialog>
 
       <TeamWorkModal
         isOpen={teamWorkModal.isOpen}

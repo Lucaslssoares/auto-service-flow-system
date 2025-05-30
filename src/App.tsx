@@ -19,6 +19,7 @@ import Employees from "./pages/Employees";
 import Appointments from "./pages/Appointments";
 import ExecutionPage from "./pages/ExecutionPage";
 import FinancePage from "./pages/FinancePage";
+import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./hooks/useAuth";
@@ -71,6 +72,7 @@ const App = () => (
                 <Route path="/agendamentos" element={<Appointments />} />
                 <Route path="/execucao" element={<ExecutionPage />} />
                 <Route path="/financeiro" element={<FinancePage />} />
+                <Route path="/configuracoes" element={<Settings />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
