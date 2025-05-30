@@ -97,7 +97,8 @@ export const useFinanceData = (selectedPeriod: string) => {
       
       // Find the service for this execution
       const service = appointment.services?.find((s: any) => 
-        appointment.appointment_services?.some((as: any) => as.service_id === s.id)
+        // Since services is already mapped from appointment_services, we can directly compare IDs
+        s.id === execution.service_id
       );
       
       if (service) {
