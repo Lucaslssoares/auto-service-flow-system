@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Save, RefreshCw, Database, Users, DollarSign, Clock } from "lucide-react";
+import { Settings as SettingsIcon, Save, RefreshCw, Database, Users, DollarSign, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 const Settings = () => {
@@ -115,7 +115,7 @@ const Settings = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Settings className="h-6 w-6" />
+          <SettingsIcon className="h-6 w-6" />
           <h2 className="text-3xl font-bold tracking-tight">Configurações do Sistema</h2>
         </div>
         <Button onClick={handleSave} disabled={loading} className="gap-2">
@@ -467,7 +467,7 @@ const Settings = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>Banco de dados:</span>
-                    <Badge variant="outline" className="text-green-600">Conectado</Badge>
+                    <Badge variant="outline">Conectado</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Último backup:</span>
