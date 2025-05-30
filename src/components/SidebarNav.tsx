@@ -10,7 +10,8 @@ import {
   Calendar,
   Clipboard,
   DollarSign,
-  LogOut
+  LogOut,
+  Cog
 } from "lucide-react";
 
 interface SidebarNavProps {
@@ -61,6 +62,11 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
       title: "Financeiro",
       icon: DollarSign,
       href: "/financeiro",
+    },
+    {
+      title: "Configurações",
+      icon: Cog,
+      href: "/configuracoes",
     },
   ];
 
