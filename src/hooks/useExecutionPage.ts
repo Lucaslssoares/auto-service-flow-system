@@ -20,6 +20,18 @@ export const useExecutionPage = () => {
     serviceName: ""
   });
 
+  const [multipleEmployeesModal, setMultipleEmployeesModal] = useState<{
+    isOpen: boolean;
+    appointmentId: string;
+    serviceId: string;
+    serviceName: string;
+  }>({
+    isOpen: false,
+    appointmentId: "",
+    serviceId: "",
+    serviceName: ""
+  });
+
   // Filter appointments that are scheduled or in-progress
   const activeAppointments = appointments
     .filter(app => app.status === "scheduled" || app.status === "in-progress")
@@ -30,7 +42,7 @@ export const useExecutionPage = () => {
     app => format(app.date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
   );
 
-  // Function to open team work modal
+  // Function to open team work modal (single employee)
   const openTeamWorkModal = (appointmentId: string, serviceId: string, serviceName: string) => {
     setTeamWorkModal({
       isOpen: true,
@@ -50,6 +62,26 @@ export const useExecutionPage = () => {
     });
   };
 
+  // Function to open multiple employees modal
+  const openMultipleEmployeesModal = (appointmentId: string, serviceId: string, serviceName: string) => {
+    setMultipleEmployeesModal({
+      isOpen: true,
+      appointmentId,
+      serviceId,
+      serviceName
+    });
+  };
+
+  // Function to close multiple employees modal
+  const closeMultipleEmployeesModal = () => {
+    setMultipleEmployeesModal({
+      isOpen: false,
+      appointmentId: "",
+      serviceId: "",
+      serviceName: ""
+    });
+  };
+
   const isLoading = appointmentsLoading || executionsLoading;
 
   return {
@@ -58,8 +90,12 @@ export const useExecutionPage = () => {
     todayAppointments,
     updateStatus,
     teamWorkModal,
+    multipleEmployeesModal,
     openTeamWorkModal,
     closeTeamWorkModal,
+    openMultipleEmployeesModal,
+    closeMultipleEmployeesModal,
+    startExecution,
     isLoading
   };
 };

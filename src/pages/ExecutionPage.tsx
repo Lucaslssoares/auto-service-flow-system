@@ -2,6 +2,7 @@
 import { Loader2 } from "lucide-react";
 import { useExecutionPage } from "@/hooks/useExecutionPage";
 import { TeamWorkModal } from "@/components/employees/TeamWorkModal";
+import { MultipleEmployeesModal } from "@/components/execution/MultipleEmployeesModal";
 import { InProgressSection } from "@/components/execution/InProgressSection";
 import { UpcomingSection } from "@/components/execution/UpcomingSection";
 import { AllAppointmentsSection } from "@/components/execution/AllAppointmentsSection";
@@ -13,8 +14,12 @@ const ExecutionPage = () => {
     todayAppointments,
     updateStatus,
     teamWorkModal,
+    multipleEmployeesModal,
     openTeamWorkModal,
     closeTeamWorkModal,
+    openMultipleEmployeesModal,
+    closeMultipleEmployeesModal,
+    startExecution,
     isLoading
   } = useExecutionPage();
 
@@ -38,12 +43,14 @@ const ExecutionPage = () => {
           appointments={appointments}
           updateStatus={updateStatus}
           onTeamWorkClick={openTeamWorkModal}
+          onMultipleEmployeesClick={openMultipleEmployeesModal}
         />
         
         <UpcomingSection
           todayAppointments={todayAppointments}
           updateStatus={updateStatus}
           onTeamWorkClick={openTeamWorkModal}
+          onMultipleEmployeesClick={openMultipleEmployeesModal}
         />
       </div>
       
@@ -51,6 +58,7 @@ const ExecutionPage = () => {
         activeAppointments={activeAppointments}
         updateStatus={updateStatus}
         onTeamWorkClick={openTeamWorkModal}
+        onMultipleEmployeesClick={openMultipleEmployeesModal}
       />
 
       <TeamWorkModal
@@ -59,6 +67,15 @@ const ExecutionPage = () => {
         appointmentId={teamWorkModal.appointmentId}
         serviceId={teamWorkModal.serviceId}
         serviceName={teamWorkModal.serviceName}
+      />
+
+      <MultipleEmployeesModal
+        isOpen={multipleEmployeesModal.isOpen}
+        onClose={closeMultipleEmployeesModal}
+        appointmentId={multipleEmployeesModal.appointmentId}
+        serviceId={multipleEmployeesModal.serviceId}
+        serviceName={multipleEmployeesModal.serviceName}
+        onStartExecution={startExecution}
       />
     </div>
   );

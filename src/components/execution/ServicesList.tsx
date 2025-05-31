@@ -8,9 +8,15 @@ interface ServicesListProps {
     name: string;
   }> | undefined;
   onTeamWorkClick: (appointmentId: string, serviceId: string, serviceName: string) => void;
+  onMultipleEmployeesClick: (appointmentId: string, serviceId: string, serviceName: string) => void;
 }
 
-export const ServicesList = ({ appointmentId, services, onTeamWorkClick }: ServicesListProps) => {
+export const ServicesList = ({ 
+  appointmentId, 
+  services, 
+  onTeamWorkClick, 
+  onMultipleEmployeesClick 
+}: ServicesListProps) => {
   if (!services || services.length === 0) {
     return <span className="text-xs text-muted-foreground">Nenhum serviço</span>;
   }
@@ -24,6 +30,7 @@ export const ServicesList = ({ appointmentId, services, onTeamWorkClick }: Servi
             appointmentId={appointmentId}
             service={service}
             onTeamWorkClick={onTeamWorkClick}
+            onMultipleEmployeesClick={onMultipleEmployeesClick}
           />
         </div>
       ))}

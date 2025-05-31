@@ -37,6 +37,14 @@ export const useSettings = () => {
       smsNotifications: false,
       appointmentReminders: true,
       paymentReminders: true
+    },
+
+    executionSettings: {
+      allowMultipleEmployees: true,
+      requireProfitDistribution: true,
+      autoCalculateCommissions: false,
+      minProfitPercentage: 5,
+      maxEmployeesPerService: 5
     }
   });
 
