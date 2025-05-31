@@ -1,155 +1,24 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useAppointments } from "@/hooks/useAppointments";
-import { useServiceExecutions } from "@/hooks/useServiceExecutions";
+import { Loader2 } from "lucide-react";
+import { useExecutionPage } from "@/hooks/useExecutionPage";
 import { TeamWorkModal } from "@/components/employees/TeamWorkModal";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Loader2, Users } from "lucide-react";
+import { InProgressSection } from "@/components/execution/InProgressSection";
+import { UpcomingSection } from "@/components/execution/UpcomingSection";
+import { AllAppointmentsSection } from "@/components/execution/AllAppointmentsSection";
 
 const ExecutionPage = () => {
-  const { appointments, updateStatus, isLoading: appointmentsLoading } = useAppointments();
-  const { executions, startExecution, completeExecution, isLoading: executionsLoading } = useServiceExecutions();
-  
-  const [teamWorkModal, setTeamWorkModal] = useState<{
-    isOpen: boolean;
-    appointmentId: string;
-    serviceId: string;
-    serviceName: string;
-  }>({
-    isOpen: false,
-    appointmentId: "",
-    serviceId: "",
-    serviceName: ""
-  });
+  const {
+    appointments,
+    activeAppointments,
+    todayAppointments,
+    updateStatus,
+    teamWorkModal,
+    openTeamWorkModal,
+    closeTeamWorkModal,
+    isLoading
+  } = useExecutionPage();
 
-  // Filter appointments that are scheduled or in-progress
-  const activeAppointments = appointments
-    .filter(app => app.status === "scheduled" || app.status === "in-progress")
-    .sort((a, b) => a.date.getTime() - b.date.getTime());
-  
-  // Today's appointments
-  const todayAppointments = activeAppointments.filter(
-    app => format(app.date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
-  );
-
-  // Function to open team work modal
-  const openTeamWorkModal = (appointmentId: string, serviceId: string, serviceName: string) => {
-    setTeamWorkModal({
-      isOpen: true,
-      appointmentId,
-      serviceId,
-      serviceName
-    });
-  };
-
-  // Function to close team work modal
-  const closeTeamWorkModal = () => {
-    setTeamWorkModal({
-      isOpen: false,
-      appointmentId: "",
-      serviceId: "",
-      serviceName: ""
-    });
-  };
-
-  // Function to get action buttons based on status
-  const getActionButtons = (app: typeof appointments[0]) => {
-    if (app.status === "scheduled") {
-      return (
-        <div className="flex gap-2">
-          <Button 
-            size="sm" 
-            onClick={() => updateStatus({ id: app.id, status: "in-progress" })}
-          >
-            Iniciar
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => updateStatus({ id: app.id, status: "cancelled" })}
-          >
-            Cancelar
-          </Button>
-        </div>
-      );
-    } else if (app.status === "in-progress") {
-      return (
-        <Button 
-          size="sm" 
-          onClick={() => updateStatus({ id: app.id, status: "completed" })}
-          className="bg-green-600 hover:bg-green-700"
-        >
-          Finalizar
-        </Button>
-      );
-    }
-    
-    return null;
-  };
-
-  // Function to get service actions (team work button)
-  const getServiceActions = (appointmentId: string, service: any) => {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => openTeamWorkModal(appointmentId, service.id, service.name)}
-        className="flex items-center gap-1"
-      >
-        <Users className="h-3 w-3" />
-        Equipe
-      </Button>
-    );
-  };
-
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case "scheduled":
-        return "bg-blue-100 text-blue-800";
-      case "in-progress":
-        return "bg-yellow-100 text-yellow-800";
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "cancelled":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-  
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "scheduled":
-        return "Agendado";
-      case "in-progress":
-        return "Em andamento";
-      case "completed":
-        return "Concluído";
-      case "cancelled":
-        return "Cancelado";
-      default:
-        return status;
-    }
-  };
-
-  if (appointmentsLoading || executionsLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex items-center gap-2">
@@ -165,162 +34,24 @@ const ExecutionPage = () => {
       <h2 className="text-3xl font-bold tracking-tight">Execução de Serviços</h2>
       
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Em Execução</CardTitle>
-            <CardDescription>
-              Serviços que estão sendo realizados no momento
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {appointments.filter(app => app.status === "in-progress").length === 0 ? (
-              <p className="text-center py-4 text-muted-foreground">
-                Nenhum serviço em execução
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Veículo</TableHead>
-                    <TableHead>Serviços</TableHead>
-                    <TableHead>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {appointments
-                    .filter(app => app.status === "in-progress")
-                    .map(app => (
-                      <TableRow key={app.id}>
-                        <TableCell>{app.customerName}</TableCell>
-                        <TableCell>{app.vehicleInfo}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-2">
-                            {app.services?.map(service => (
-                              <div key={service.id} className="flex items-center justify-between">
-                                <span className="text-xs">{service.name}</span>
-                                {getServiceActions(app.id, service)}
-                              </div>
-                            )) || <span className="text-xs text-muted-foreground">Nenhum serviço</span>}
-                          </div>
-                        </TableCell>
-                        <TableCell>{getActionButtons(app)}</TableCell>
-                      </TableRow>
-                    ))
-                  }
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <InProgressSection
+          appointments={appointments}
+          updateStatus={updateStatus}
+          onTeamWorkClick={openTeamWorkModal}
+        />
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Próximos Serviços</CardTitle>
-            <CardDescription>
-              Serviços agendados para hoje
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {todayAppointments.filter(app => app.status === "scheduled").length === 0 ? (
-              <p className="text-center py-4 text-muted-foreground">
-                Nenhum serviço agendado para hoje
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Horário</TableHead>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Veículo</TableHead>
-                    <TableHead>Serviços</TableHead>
-                    <TableHead>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {todayAppointments
-                    .filter(app => app.status === "scheduled")
-                    .map(app => (
-                      <TableRow key={app.id}>
-                        <TableCell>{format(app.date, "HH:mm")}</TableCell>
-                        <TableCell>{app.customerName}</TableCell>
-                        <TableCell>{app.vehicleInfo}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-2">
-                            {app.services?.map(service => (
-                              <div key={service.id} className="flex items-center justify-between">
-                                <span className="text-xs">{service.name}</span>
-                                {getServiceActions(app.id, service)}
-                              </div>
-                            )) || <span className="text-xs text-muted-foreground">Nenhum serviço</span>}
-                          </div>
-                        </TableCell>
-                        <TableCell>{getActionButtons(app)}</TableCell>
-                      </TableRow>
-                    ))
-                  }
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <UpcomingSection
+          todayAppointments={todayAppointments}
+          updateStatus={updateStatus}
+          onTeamWorkClick={openTeamWorkModal}
+        />
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Todos os Agendamentos Ativos</CardTitle>
-          <CardDescription>
-            Agendamentos que precisam ser executados
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {activeAppointments.length === 0 ? (
-            <p className="text-center py-4 text-muted-foreground">
-              Nenhum agendamento ativo
-            </p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Hora</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Veículo</TableHead>
-                  <TableHead>Serviços</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {activeAppointments.map(app => (
-                  <TableRow key={app.id}>
-                    <TableCell>{format(app.date, "dd/MM/yyyy")}</TableCell>
-                    <TableCell>{format(app.date, "HH:mm")}</TableCell>
-                    <TableCell>{app.customerName}</TableCell>
-                    <TableCell>{app.vehicleInfo}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-2">
-                        {app.services?.map(service => (
-                          <div key={service.id} className="flex items-center justify-between">
-                            <span className="text-xs">{service.name}</span>
-                            {getServiceActions(app.id, service)}
-                          </div>
-                        )) || <span className="text-xs text-muted-foreground">Nenhum serviço</span>}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
-                        {getStatusText(app.status)}
-                      </span>
-                    </TableCell>
-                    <TableCell>{getActionButtons(app)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      <AllAppointmentsSection
+        activeAppointments={activeAppointments}
+        updateStatus={updateStatus}
+        onTeamWorkClick={openTeamWorkModal}
+      />
 
       <TeamWorkModal
         isOpen={teamWorkModal.isOpen}
