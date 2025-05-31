@@ -6,6 +6,7 @@ import { GeneralSettingsTab } from "@/components/settings/GeneralSettingsTab";
 import { SchedulingSettingsTab } from "@/components/settings/SchedulingSettingsTab";
 import { FinancialSettingsTab } from "@/components/settings/FinancialSettingsTab";
 import { NotificationsSettingsTab } from "@/components/settings/NotificationsSettingsTab";
+import { ExecutionSettingsTab } from "@/components/settings/ExecutionSettingsTab";
 import { AdvancedSettingsTab } from "@/components/settings/AdvancedSettingsTab";
 import { useSettings } from "@/hooks/useSettings";
 
@@ -17,10 +18,11 @@ const Settings = () => {
       <SettingsHeader onSave={handleSave} loading={loading} />
 
       <Tabs defaultValue="general" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="general">Geral</TabsTrigger>
           <TabsTrigger value="scheduling">Agendamento</TabsTrigger>
           <TabsTrigger value="financial">Financeiro</TabsTrigger>
+          <TabsTrigger value="execution">Execução</TabsTrigger>
           <TabsTrigger value="notifications">Notificações</TabsTrigger>
           <TabsTrigger value="advanced">Avançado</TabsTrigger>
         </TabsList>
@@ -35,6 +37,10 @@ const Settings = () => {
 
         <TabsContent value="financial" className="space-y-4">
           <FinancialSettingsTab settings={settings} updateSetting={updateSetting} />
+        </TabsContent>
+
+        <TabsContent value="execution" className="space-y-4">
+          <ExecutionSettingsTab settings={settings} updateSetting={updateSetting} />
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-4">

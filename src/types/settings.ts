@@ -28,6 +28,14 @@ export interface Notifications {
   paymentReminders: boolean;
 }
 
+export interface ExecutionSettings {
+  allowMultipleEmployees: boolean;
+  requireProfitDistribution: boolean;
+  autoCalculateCommissions: boolean;
+  minProfitPercentage: number;
+  maxEmployeesPerService: number;
+}
+
 export interface SettingsData {
   businessName: string;
   businessPhone: string;
@@ -37,4 +45,5 @@ export interface SettingsData {
   appointmentSettings: AppointmentSettings;
   financialSettings: FinancialSettings;
   notifications: Notifications;
+  executionSettings: ExecutionSettings;
 }

@@ -65,39 +65,52 @@ export const useServiceExecutions = () => {
     }
   });
 
-  // Start service execution mutation
+  // Start service execution mutation - now supports multiple employees
   const startExecutionMutation = useMutation({
-    mutationFn: async ({ appointmentId, serviceId, employeeId }: {
+    mutationFn: async ({ appointmentId, serviceId, employees }: {
       appointmentId: string;
       serviceId: string;
-      employeeId: string;
+      employees: Array<{ employeeId: string; profitPercentage: number }>;
     }) => {
+      // Validate that profit percentages sum to 100
+      const totalProfitPercentage = employees.reduce((sum, emp) => sum + emp.profitPercentage, 0);
+      if (Math.abs(totalProfitPercentage - 100) > 0.01) {
+        throw new Error('A soma das porcentagens de lucro deve ser 100%');
+      }
+
+      // Insert execution records for each employee
+      const executions = employees.map(emp => ({
+        appointment_id: appointmentId,
+        service_id: serviceId,
+        employee_id: emp.employeeId,
+        start_time: new Date().toISOString(),
+        status: 'in-progress',
+        profit_percentage: emp.profitPercentage
+      }));
+
       const { error } = await supabase
         .from('service_executions')
-        .insert({
-          appointment_id: appointmentId,
-          service_id: serviceId,
-          employee_id: employeeId,
-          start_time: new Date().toISOString(),
-          status: 'in-progress',
-          profit_percentage: 100
-        });
+        .insert(executions);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['service_executions'] });
-      toast.success('Execução do serviço iniciada!');
+      toast.success('Execução do serviço iniciada com múltiplos funcionários!');
     },
     onError: (error) => {
       console.error('Erro ao iniciar execução:', error);
-      toast.error('Erro ao iniciar execução do serviço');
+      toast.error(error.message || 'Erro ao iniciar execução do serviço');
     }
   });
 
-  // Complete service execution mutation
+  // Complete service execution mutation - completes all executions for a service
   const completeExecutionMutation = useMutation({
-    mutationFn: async ({ id, notes }: { id: string; notes?: string }) => {
+    mutationFn: async ({ appointmentId, serviceId, notes }: { 
+      appointmentId: string; 
+      serviceId: string; 
+      notes?: string 
+    }) => {
       const { error } = await supabase
         .from('service_executions')
         .update({
@@ -105,7 +118,9 @@ export const useServiceExecutions = () => {
           status: 'completed',
           notes
         })
-        .eq('id', id);
+        .eq('appointment_id', appointmentId)
+        .eq('service_id', serviceId)
+        .eq('status', 'in-progress');
 
       if (error) throw error;
     },
