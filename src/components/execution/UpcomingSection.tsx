@@ -29,9 +29,10 @@ interface UpcomingSectionProps {
   }>;
   updateStatus: (data: { id: string; status: string }) => void;
   onTeamWorkClick: (appointmentId: string, serviceId: string, serviceName: string) => void;
+  onMultipleEmployeesClick: (appointmentId: string, serviceId: string, serviceName: string) => void;
 }
 
-export const UpcomingSection = ({ todayAppointments, updateStatus, onTeamWorkClick }: UpcomingSectionProps) => {
+export const UpcomingSection = ({ todayAppointments, updateStatus, onTeamWorkClick, onMultipleEmployeesClick }: UpcomingSectionProps) => {
   const scheduledAppointments = todayAppointments.filter(app => app.status === "scheduled");
 
   return (
@@ -69,6 +70,7 @@ export const UpcomingSection = ({ todayAppointments, updateStatus, onTeamWorkCli
                       appointmentId={app.id}
                       services={app.services}
                       onTeamWorkClick={onTeamWorkClick}
+                      onMultipleEmployeesClick={onMultipleEmployeesClick}
                     />
                   </TableCell>
                   <TableCell>

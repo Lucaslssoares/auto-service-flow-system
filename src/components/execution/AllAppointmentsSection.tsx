@@ -30,9 +30,10 @@ interface AllAppointmentsSectionProps {
   }>;
   updateStatus: (data: { id: string; status: string }) => void;
   onTeamWorkClick: (appointmentId: string, serviceId: string, serviceName: string) => void;
+  onMultipleEmployeesClick: (appointmentId: string, serviceId: string, serviceName: string) => void;
 }
 
-export const AllAppointmentsSection = ({ activeAppointments, updateStatus, onTeamWorkClick }: AllAppointmentsSectionProps) => {
+export const AllAppointmentsSection = ({ activeAppointments, updateStatus, onTeamWorkClick, onMultipleEmployeesClick }: AllAppointmentsSectionProps) => {
   return (
     <Card>
       <CardHeader>
@@ -71,6 +72,7 @@ export const AllAppointmentsSection = ({ activeAppointments, updateStatus, onTea
                       appointmentId={app.id}
                       services={app.services}
                       onTeamWorkClick={onTeamWorkClick}
+                      onMultipleEmployeesClick={onMultipleEmployeesClick}
                     />
                   </TableCell>
                   <TableCell>
