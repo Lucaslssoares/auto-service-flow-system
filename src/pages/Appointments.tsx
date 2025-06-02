@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,15 +20,30 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
 import { Plus, Users, Loader2 } from "lucide-react";
 import { TeamWorkModal } from "@/components/employees/TeamWorkModal";
+import { MultipleEmployeesModal } from "@/components/execution/MultipleEmployeesModal";
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
 import { useAppointments } from "@/hooks/useAppointments";
+import { useServiceExecutions } from "@/hooks/useServiceExecutions";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ServiceActions } from "@/components/execution/ServiceActions";
 
 const Appointments = () => {
   const { appointments, isLoading, updateStatus } = useAppointments();
+  const { startExecution } = useServiceExecutions();
   const [appointmentFormOpen, setAppointmentFormOpen] = useState(false);
   const [teamWorkModal, setTeamWorkModal] = useState<{
+    isOpen: boolean;
+    appointmentId: string;
+    serviceId: string;
+    serviceName: string;
+  }>({
+    isOpen: false,
+    appointmentId: "",
+    serviceId: "",
+    serviceName: ""
+  });
+  const [multipleEmployeesModal, setMultipleEmployeesModal] = useState<{
     isOpen: boolean;
     appointmentId: string;
     serviceId: string;
@@ -87,6 +103,32 @@ const Appointments = () => {
     });
   };
 
+  const openMultipleEmployeesModal = (appointmentId: string, serviceId: string, serviceName: string) => {
+    setMultipleEmployeesModal({
+      isOpen: true,
+      appointmentId,
+      serviceId,
+      serviceName
+    });
+  };
+
+  const closeMultipleEmployeesModal = () => {
+    setMultipleEmployeesModal({
+      isOpen: false,
+      appointmentId: "",
+      serviceId: "",
+      serviceName: ""
+    });
+  };
+
+  const handleStartExecution = (data: {
+    appointmentId: string;
+    serviceId: string;
+    employees: Array<{ employeeId: string; profitPercentage: number }>;
+  }) => {
+    startExecution(data);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -111,7 +153,7 @@ const Appointments = () => {
         <CardHeader>
           <CardTitle>Lista de Agendamentos</CardTitle>
           <CardDescription>
-            Gerencie os agendamentos de serviços
+            Gerencie os agendamentos de serviços e configure equipes de trabalho
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -150,22 +192,16 @@ const Appointments = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {appointment.services?.map((service) => (
-                          <div key={service.id} className="flex items-center gap-2">
+                          <div key={service.id} className="flex items-center justify-between">
                             <span className="text-sm">{service.name}</span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openTeamWorkModal(
-                                appointment.id, 
-                                service.id, 
-                                service.name
-                              )}
-                              className="h-6 px-2"
-                            >
-                              <Users className="h-3 w-3" />
-                            </Button>
+                            <ServiceActions
+                              appointmentId={appointment.id}
+                              service={service}
+                              onTeamWorkClick={openTeamWorkModal}
+                              onMultipleEmployeesClick={openMultipleEmployeesModal}
+                            />
                           </div>
                         )) || <span className="text-sm text-muted-foreground">Nenhum serviço</span>}
                       </div>
@@ -221,6 +257,15 @@ const Appointments = () => {
         appointmentId={teamWorkModal.appointmentId}
         serviceId={teamWorkModal.serviceId}
         serviceName={teamWorkModal.serviceName}
+      />
+
+      <MultipleEmployeesModal
+        isOpen={multipleEmployeesModal.isOpen}
+        onClose={closeMultipleEmployeesModal}
+        appointmentId={multipleEmployeesModal.appointmentId}
+        serviceId={multipleEmployeesModal.serviceId}
+        serviceName={multipleEmployeesModal.serviceName}
+        onStartExecution={handleStartExecution}
       />
     </div>
   );
