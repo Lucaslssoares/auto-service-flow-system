@@ -21,6 +21,7 @@ import ExecutionPage from "./pages/ExecutionPage";
 import FinancePage from "./pages/FinancePage";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
+import ClientAppointment from "./pages/ClientAppointment";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./hooks/useAuth";
 
@@ -59,6 +60,7 @@ const App = () => (
           <AuthProvider>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/agendar" element={<ClientAppointment />} />
               <Route path="/" element={
                 <ProtectedRoute>
                   <Layout />
