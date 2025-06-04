@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,18 +15,20 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useServiceManagement } from '@/hooks/useServiceManagement';
-import { useAppointments } from '@/hooks/useAppointments';
+import { usePublicAppointments } from '@/hooks/usePublicAppointments';
 import { toast } from 'sonner';
 
 const clientAppointmentSchema = z.object({
   customerName: z.string().min(1, 'Nome é obrigatório'),
   customerPhone: z.string().min(1, 'Telefone é obrigatório'),
   customerEmail: z.string().email('Email inválido'),
+  customerCpf: z.string().optional(),
   vehiclePlate: z.string().min(1, 'Placa é obrigatória'),
   vehicleBrand: z.string().min(1, 'Marca é obrigatória'),
   vehicleModel: z.string().min(1, 'Modelo é obrigatório'),
   vehicleColor: z.string().min(1, 'Cor é obrigatória'),
   vehicleType: z.enum(['car', 'motorcycle', 'truck', 'other']),
+  vehicleYear: z.number().optional(),
   date: z.date({
     required_error: 'Selecione uma data',
   }),
@@ -41,7 +42,7 @@ const ClientAppointment = () => {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [appointmentCreated, setAppointmentCreated] = useState(false);
   const { services } = useServiceManagement();
-  const { createAppointment, isCreating } = useAppointments();
+  const { createPublicAppointment, isCreating } = usePublicAppointments();
 
   const form = useForm<ClientAppointmentFormData>({
     resolver: zodResolver(clientAppointmentSchema),
@@ -66,21 +67,33 @@ const ClientAppointment = () => {
       const appointmentDate = new Date(data.date);
       appointmentDate.setHours(parseInt(hours), parseInt(minutes));
 
-      // For public appointments, we'll use a default employee and create customer/vehicle on the fly
-      createAppointment({
-        customerId: 'temp-customer', // This would need to be handled in the backend
-        vehicleId: 'temp-vehicle', // This would need to be handled in the backend
-        employeeId: 'temp-employee', // This would need to be handled in the backend
-        services: selectedServicesData,
+      console.log('Submitting appointment with data:', {
+        ...data,
+        services: selectedServices,
+        totalPrice,
+        date: appointmentDate
+      });
+
+      createPublicAppointment({
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        customerEmail: data.customerEmail,
+        customerCpf: data.customerCpf,
+        vehiclePlate: data.vehiclePlate,
+        vehicleBrand: data.vehicleBrand,
+        vehicleModel: data.vehicleModel,
+        vehicleColor: data.vehicleColor,
+        vehicleType: data.vehicleType,
+        vehicleYear: data.vehicleYear,
         date: appointmentDate,
-        status: 'scheduled',
+        services: selectedServices,
         notes: data.notes || '',
         totalPrice,
       });
 
       setAppointmentCreated(true);
-      toast.success('Agendamento criado com sucesso!');
     } catch (error) {
+      console.error('Error in form submission:', error);
       toast.error('Erro ao criar agendamento');
     }
   };
@@ -248,19 +261,35 @@ const ClientAppointment = () => {
                         />
                       </div>
 
-                      <FormField
-                        control={form.control}
-                        name="customerEmail"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input placeholder="seu@email.com" type="email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="customerEmail"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input placeholder="seu@email.com" type="email" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="customerCpf"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>CPF (opcional)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="000.000.000-00" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
 
                     {/* Vehicle Information */}
@@ -341,6 +370,25 @@ const ClientAppointment = () => {
                               <FormLabel>Cor</FormLabel>
                               <FormControl>
                                 <Input placeholder="Branco, Preto, etc." {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="vehicleYear"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Ano (opcional)</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  placeholder="2020" 
+                                  {...field}
+                                  onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
