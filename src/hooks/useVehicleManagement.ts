@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Vehicle, VehicleType } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +21,7 @@ export const useVehicleManagement = () => {
         .from("vehicles")
         .select(`
           *,
-          customers (
+          customers!customer_id (
             name
           )
         `)
@@ -68,7 +69,7 @@ export const useVehicleManagement = () => {
         }])
         .select(`
           *,
-          customers (
+          customers!customer_id (
             name
           )
         `)
@@ -121,7 +122,7 @@ export const useVehicleManagement = () => {
         .eq("id", id)
         .select(`
           *,
-          customers (
+          customers!customer_id (
             name
           )
         `)
