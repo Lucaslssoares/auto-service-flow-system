@@ -304,7 +304,7 @@ Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](
 
 <div align="center">
 
-**🚗 Desenvolvido com ❤️ para revolucionar a gestão de lava-jatos**
+**🚗 Desenvolvido para revolucionar a gestão de lava-jatos**
 
 [⭐ Star no GitHub](https://github.com/seu-usuario/lava-car-saas) • [🚀 Demo Online](https://lavacar-saas.vercel.app) • [📖 Documentação](https://docs.lavacar-saas.com.br)
 
