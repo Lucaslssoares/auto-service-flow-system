@@ -25,7 +25,10 @@ export const useAppointments = () => {
         `)
         .order('date', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao buscar agendamentos:', error);
+        throw error;
+      }
 
       return data.map((appointment: any) => ({
         id: appointment.id,
@@ -35,19 +38,26 @@ export const useAppointments = () => {
         vehicleInfo: appointment.vehicles 
           ? `${appointment.vehicles.brand} ${appointment.vehicles.model} - ${appointment.vehicles.plate}`
           : 'Veículo não encontrado',
-        services: appointment.appointment_services?.map((as: any) => as.services) || [],
+        services: appointment.appointment_services?.map((as: any) => as.services).filter(Boolean) || [],
         employeeId: appointment.employee_id,
         date: new Date(appointment.date),
         status: appointment.status as AppointmentStatus,
         notes: appointment.notes || '',
-        totalPrice: Number(appointment.total_price)
+        totalPrice: Number(appointment.total_price) || 0
       })) as Appointment[];
-    }
+    },
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Create appointment mutation
   const createAppointmentMutation = useMutation({
     mutationFn: async (appointmentData: Omit<Appointment, 'id' | 'customerName' | 'vehicleInfo'>) => {
+      // Validate required data
+      if (!appointmentData.customerId || !appointmentData.vehicleId) {
+        throw new Error('Cliente e veículo são obrigatórios');
+      }
+
       // First create the appointment
       const { data: appointment, error: appointmentError } = await supabase
         .from('appointments')
@@ -56,9 +66,9 @@ export const useAppointments = () => {
           vehicle_id: appointmentData.vehicleId,
           employee_id: appointmentData.employeeId,
           date: appointmentData.date.toISOString(),
-          status: appointmentData.status,
-          notes: appointmentData.notes,
-          total_price: appointmentData.totalPrice
+          status: appointmentData.status || 'scheduled',
+          notes: appointmentData.notes || '',
+          total_price: appointmentData.totalPrice || 0
         })
         .select()
         .single();
@@ -87,7 +97,7 @@ export const useAppointments = () => {
     },
     onError: (error) => {
       console.error('Erro ao criar agendamento:', error);
-      toast.error('Erro ao criar agendamento');
+      toast.error(`Erro ao criar agendamento: ${error.message}`);
     }
   });
 
@@ -107,7 +117,7 @@ export const useAppointments = () => {
     },
     onError: (error) => {
       console.error('Erro ao atualizar status:', error);
-      toast.error('Erro ao atualizar status');
+      toast.error(`Erro ao atualizar status: ${error.message}`);
     }
   });
 
@@ -134,7 +144,7 @@ export const useAppointments = () => {
     },
     onError: (error) => {
       console.error('Erro ao excluir agendamento:', error);
-      toast.error('Erro ao excluir agendamento');
+      toast.error(`Erro ao excluir agendamento: ${error.message}`);
     }
   });
 
