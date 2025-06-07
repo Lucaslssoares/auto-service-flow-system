@@ -17,7 +17,7 @@ export const useVehicleOperations = () => {
         .from("vehicles")
         .select(`
           *,
-          customers!customer_id (
+          customers!vehicles_customer_id_fkey (
             name
           )
         `)
@@ -66,7 +66,7 @@ export const useVehicleOperations = () => {
         }])
         .select(`
           *,
-          customers!customer_id (
+          customers!vehicles_customer_id_fkey (
             name
           )
         `)
@@ -119,7 +119,7 @@ export const useVehicleOperations = () => {
         .eq("id", id)
         .select(`
           *,
-          customers!customer_id (
+          customers!vehicles_customer_id_fkey (
             name
           )
         `)

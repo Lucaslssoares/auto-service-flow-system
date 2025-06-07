@@ -1,136 +1,165 @@
 
-import { useAuth } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Users, 
-  Car, 
-  Wrench, 
-  UserCheck, 
-  Calendar, 
-  Play, 
-  DollarSign,
-  ArrowRight
-} from "lucide-react";
+import { Calendar, Users, Car, Wrench, Clock, TrendingUp } from "lucide-react";
+import { SystemStatus } from "@/components/system/SystemStatus";
 
 const Index = () => {
-  const { user } = useAuth();
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">Lava Car</CardTitle>
-            <CardDescription>
-              Sistema completo de gerenciamento para lava-jatos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link to="/auth">
-              <Button className="w-full">
-                Entrar no Sistema
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const modules = [
+  const stats = [
     {
-      title: "Clientes",
-      description: "Gerenciar clientes e seus dados",
+      title: "Agendamentos Hoje",
+      value: "12",
+      description: "3 em andamento",
+      icon: Calendar,
+      trend: "+2 em relação a ontem"
+    },
+    {
+      title: "Clientes Cadastrados",
+      value: "248",
+      description: "Base de clientes",
       icon: Users,
-      path: "/clientes",
-      color: "bg-blue-500"
+      trend: "+5 este mês"
     },
     {
       title: "Veículos",
-      description: "Cadastro e controle de veículos",
+      value: "312",
+      description: "Total cadastrado",
       icon: Car,
-      path: "/veiculos",
-      color: "bg-green-500"
+      trend: "+8 este mês"
     },
     {
-      title: "Serviços",
-      description: "Catálogo de serviços oferecidos",
+      title: "Serviços Ativos",
+      value: "15",
+      description: "Tipos de serviço",
       icon: Wrench,
-      path: "/servicos",
-      color: "bg-purple-500"
+      trend: "Catálogo completo"
     },
     {
-      title: "Funcionários",
-      description: "Equipe e trabalho colaborativo",
-      icon: UserCheck,
-      path: "/funcionarios",
-      color: "bg-orange-500"
+      title: "Tempo Médio",
+      value: "45min",
+      description: "Por serviço",
+      icon: Clock,
+      trend: "Otimizado"
     },
     {
-      title: "Agendamentos",
-      description: "Controle de agendamentos",
-      icon: Calendar,
-      path: "/agendamentos",
-      color: "bg-red-500"
-    },
-    {
-      title: "Execução",
-      description: "Acompanhar serviços em andamento",
-      icon: Play,
-      path: "/execucao",
-      color: "bg-indigo-500"
-    },
-    {
-      title: "Financeiro",
-      description: "Relatórios e divisão de lucros",
-      icon: DollarSign,
-      path: "/financeiro",
-      color: "bg-emerald-500"
+      title: "Receita Mensal",
+      value: "R$ 12.5k",
+      description: "Este mês",
+      icon: TrendingUp,
+      trend: "+15% vs mês anterior"
     }
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Bem-vindo ao Lava Car 
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Olá, {user.email}! Seja bem vindo !
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <p className="text-muted-foreground">
+          Bem-vindo ao sistema de gestão do seu lava-jato
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {modules.map((module) => (
-          <Link key={module.path} to={module.path}>
-            <Card className="h-full transition-all hover:shadow-lg hover:scale-105 cursor-pointer">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg ${module.color} text-white`}>
-                    <module.icon className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl">{module.title}</CardTitle>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base mb-4">
-                  {module.description}
-                </CardDescription>
-                <div className="flex items-center text-primary hover:text-primary/80">
-                  <span className="text-sm font-medium">Acessar módulo</span>
-                  <ArrowRight className="h-4 w-4 ml-1" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex-1">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      {stat.title}
+                    </CardTitle>
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stat.value}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {stat.description}
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">
+                      {stat.trend}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="lg:w-80">
+          <SystemStatus />
+        </div>
       </div>
 
-      
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Próximos Agendamentos</CardTitle>
+            <CardDescription>
+              Agendamentos para as próximas horas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium">João Silva</p>
+                  <p className="text-sm text-muted-foreground">Lavagem Completa</p>
+                </div>
+                <div className="text-sm text-muted-foreground">14:30</div>
+              </div>
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium">Maria Santos</p>
+                  <p className="text-sm text-muted-foreground">Enceramento</p>
+                </div>
+                <div className="text-sm text-muted-foreground">15:00</div>
+              </div>
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium">Pedro Costa</p>
+                  <p className="text-sm text-muted-foreground">Lavagem Simples</p>
+                </div>
+                <div className="text-sm text-muted-foreground">15:30</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Atividade Recente</CardTitle>
+            <CardDescription>
+              Últimas movimentações do sistema
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="flex-1">
+                  <p className="text-sm">Novo cliente cadastrado</p>
+                  <p className="text-xs text-muted-foreground">há 15 minutos</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="flex-1">
+                  <p className="text-sm">Agendamento confirmado</p>
+                  <p className="text-xs text-muted-foreground">há 30 minutos</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <div className="flex-1">
+                  <p className="text-sm">Serviço finalizado</p>
+                  <p className="text-xs text-muted-foreground">há 1 hora</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
