@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getCustomerName, getEmployeeName } from "@/data/mockData";
 
 interface RecentServicesTableProps {
   completedAppointments: any[];
@@ -53,8 +52,8 @@ export const RecentServicesTable = ({ completedAppointments }: RecentServicesTab
                 .map(app => (
                   <TableRow key={app.id}>
                     <TableCell>{format(app.date, "dd/MM/yyyy HH:mm")}</TableCell>
-                    <TableCell>{getCustomerName(app.customerId)}</TableCell>
-                    <TableCell>{getEmployeeName(app.employeeId)}</TableCell>
+                    <TableCell>{app.customerName || 'Cliente não informado'}</TableCell>
+                    <TableCell>{app.employeeName || 'Funcionário não informado'}</TableCell>
                     <TableCell className="text-right font-medium">
                       R$ {app.totalPrice.toFixed(2).replace(".", ",")}
                     </TableCell>

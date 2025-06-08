@@ -17,7 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { employees } from "@/data/mockData";
 import { ExportButton } from "@/components/common/ExportButton";
 import { formatCurrencyForExport } from "@/utils/exportUtils";
 
@@ -33,22 +32,28 @@ interface CommissionsTableProps {
   completedAppointments: any[];
 }
 
+// Mock employee data for salary calculation - in production this would come from the database
+const mockEmployees = [
+  { id: "1", salary: 2000.00 },
+  { id: "2", salary: 2200.00 },
+];
+
 export const CommissionsTable = ({ 
   employeeCommissions, 
   completedAppointments 
 }: CommissionsTableProps) => {
   // Preparar dados para exportação
   const exportData = employeeCommissions.map(emp => {
-    const employee = employees.find(e => e.id === emp.employeeId);
-    if (!employee) return null;
-    
-    const totalPay = employee.salary + emp.totalCommission;
+    // In a real app, this would fetch from the employees table
+    const employee = mockEmployees.find(e => e.id === emp.employeeId);
+    const salary = employee?.salary || 2000; // Default salary
+    const totalPay = salary + emp.totalCommission;
     
     return {
       Funcionário: emp.employeeName,
       'Serviços Realizados': emp.serviceCount,
       Comissão: formatCurrencyForExport(emp.totalCommission),
-      'Salário Base': formatCurrencyForExport(employee.salary),
+      'Salário Base': formatCurrencyForExport(salary),
       Total: formatCurrencyForExport(totalPay)
     };
   }).filter(Boolean);
@@ -79,10 +84,10 @@ export const CommissionsTable = ({
             </TableHeader>
             <TableBody>
               {employeeCommissions.map(emp => {
-                const employee = employees.find(e => e.id === emp.employeeId);
-                if (!employee) return null;
-                
-                const totalPay = employee.salary + emp.totalCommission;
+                // In a real app, this would fetch from the employees table
+                const employee = mockEmployees.find(e => e.id === emp.employeeId);
+                const salary = employee?.salary || 2000; // Default salary
+                const totalPay = salary + emp.totalCommission;
                 
                 return (
                   <TableRow key={emp.employeeId}>
@@ -92,7 +97,7 @@ export const CommissionsTable = ({
                       R$ {emp.totalCommission.toFixed(2).replace(".", ",")}
                     </TableCell>
                     <TableCell className="text-right">
-                      R$ {employee.salary.toFixed(2).replace(".", ",")}
+                      R$ {salary.toFixed(2).replace(".", ",")}
                     </TableCell>
                     <TableCell className="font-medium text-right">
                       R$ {totalPay.toFixed(2).replace(".", ",")}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,14 +73,14 @@ export const SecureAuthProvider = ({ children }: { children: React.ReactNode }) 
   }, [profile]);
 
   // Função para refresh da sessão
-  const refreshSession = useCallback(async () => {
+  const refreshSession = useCallback(async (): Promise<void> => {
     try {
       const { data, error } = await supabase.auth.refreshSession();
       if (error) {
         console.error('Erro ao atualizar sessão:', maskSensitiveData(error));
         throw error;
       }
-      return data;
+      // Don't return the data, just void as expected by the interface
     } catch (error) {
       console.error('Erro ao atualizar sessão:', maskSensitiveData(error));
       throw error;

@@ -51,6 +51,12 @@ const FinancePageOptimized = () => {
       </div>
     );
   }
+
+  // Transform chart data to match expected format
+  const transformedChartData = chartData.map(item => ({
+    name: item.date,
+    valor: item.revenue
+  }));
   
   return (
     <ProtectedRoute requiredPermission="view_finance">
@@ -76,7 +82,7 @@ const FinancePageOptimized = () => {
               completedAppointments={completedAppointments}
               totalRevenue={totalRevenue}
               employeeCommissions={employeeCommissions}
-              chartData={chartData}
+              chartData={transformedChartData}
             />
           </TabsContent>
           
