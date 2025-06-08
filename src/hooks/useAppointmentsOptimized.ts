@@ -1,9 +1,8 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Appointment, AppointmentStatus } from '@/types';
+import { Appointment, AppointmentStatus, Service } from '@/types';
 
 interface AppointmentWithRelations {
   id: string;
@@ -27,6 +26,8 @@ interface AppointmentWithRelations {
       id: string;
       name: string;
       price: number;
+      duration: number;
+      commission_percentage: number;
     } | null;
   }> | null;
 }
@@ -53,7 +54,7 @@ export const useAppointmentsOptimized = () => {
           vehicles!appointments_vehicle_id_fkey(plate, model, brand, color),
           employees!appointments_employee_id_fkey(name),
           appointment_services(
-            services!appointment_services_service_id_fkey(id, name, price)
+            services!appointment_services_service_id_fkey(id, name, price, duration, commission_percentage)
           )
         `)
         .order('date', { ascending: true });
@@ -77,8 +78,12 @@ export const useAppointmentsOptimized = () => {
           .map(service => ({
             id: service!.id,
             name: service!.name || '',
-            price: Number(service!.price) || 0
-          })) || [],
+            price: Number(service!.price) || 0,
+            duration: Number(service!.duration) || 0,
+            commissionPercentage: Number(service!.commission_percentage) || 0,
+            description: '', // Add default values for missing Service properties
+            createdAt: new Date() // Add default createdAt
+          })) || [] as Service[],
         employeeId: appointment.employee_id,
         date: new Date(appointment.date),
         status: appointment.status,

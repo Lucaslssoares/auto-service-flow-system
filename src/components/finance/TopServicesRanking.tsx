@@ -15,63 +15,54 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { services } from "@/data/mockData";
 
 interface TopServicesRankingProps {
   completedAppointments: any[];
 }
 
 export const TopServicesRanking = ({ completedAppointments }: TopServicesRankingProps) => {
-  // Count services by frequency and revenue
-  const serviceStats: Record<string, { count: number; revenue: number }> = {};
+  // Count services by frequency and revenue from actual appointment data
+  const serviceStats: Record<string, { count: number; revenue: number; name: string }> = {};
   
   completedAppointments.forEach(app => {
-    app.serviceIds.forEach(serviceId => {
-      const service = services.find(s => s.id === serviceId);
-      if (!service) return;
-      
-      if (serviceStats[service.id]) {
-        serviceStats[service.id].count += 1;
-        serviceStats[service.id].revenue += service.price;
-      } else {
-        serviceStats[service.id] = {
-          count: 1,
-          revenue: service.price,
-        };
-      }
-    });
+    if (app.services && Array.isArray(app.services)) {
+      app.services.forEach(service => {
+        const serviceId = service.id;
+        const serviceName = service.name || 'Serviço sem nome';
+        const servicePrice = service.price || 0;
+        
+        if (serviceStats[serviceId]) {
+          serviceStats[serviceId].count += 1;
+          serviceStats[serviceId].revenue += servicePrice;
+        } else {
+          serviceStats[serviceId] = {
+            count: 1,
+            revenue: servicePrice,
+            name: serviceName,
+          };
+        }
+      });
+    }
   });
   
   // Create ranking by frequency
   const frequencyRanking = Object.keys(serviceStats)
-    .map(serviceId => {
-      const service = services.find(s => s.id === serviceId);
-      if (!service) return null;
-      
-      return {
-        id: serviceId,
-        name: service.name,
-        count: serviceStats[serviceId].count,
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => b!.count - a!.count)
+    .map(serviceId => ({
+      id: serviceId,
+      name: serviceStats[serviceId].name,
+      count: serviceStats[serviceId].count,
+    }))
+    .sort((a, b) => b.count - a.count)
     .slice(0, 5); // Top 5
   
   // Create ranking by revenue
   const revenueRanking = Object.keys(serviceStats)
-    .map(serviceId => {
-      const service = services.find(s => s.id === serviceId);
-      if (!service) return null;
-      
-      return {
-        id: serviceId,
-        name: service.name,
-        revenue: serviceStats[serviceId].revenue,
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => b!.revenue - a!.revenue)
+    .map(serviceId => ({
+      id: serviceId,
+      name: serviceStats[serviceId].name,
+      revenue: serviceStats[serviceId].revenue,
+    }))
+    .sort((a, b) => b.revenue - a.revenue)
     .slice(0, 5); // Top 5
   
   return (
@@ -99,10 +90,10 @@ export const TopServicesRanking = ({ completedAppointments }: TopServicesRanking
               </TableHeader>
               <TableBody>
                 {frequencyRanking.map((item, index) => (
-                  <TableRow key={item!.id}>
+                  <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}º</TableCell>
-                    <TableCell>{item!.name}</TableCell>
-                    <TableCell className="text-right">{item!.count}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell className="text-right">{item.count}</TableCell>
                   </TableRow>
                 ))}
                 {frequencyRanking.length === 0 && (
@@ -141,11 +132,11 @@ export const TopServicesRanking = ({ completedAppointments }: TopServicesRanking
               </TableHeader>
               <TableBody>
                 {revenueRanking.map((item, index) => (
-                  <TableRow key={item!.id}>
+                  <TableRow key={item.id}>
                     <TableCell className="font-medium">{index + 1}º</TableCell>
-                    <TableCell>{item!.name}</TableCell>
+                    <TableCell>{item.name}</TableCell>
                     <TableCell className="text-right">
-                      R$ {item!.revenue.toFixed(2).replace('.', ',')}
+                      R$ {item.revenue.toFixed(2).replace('.', ',')}
                     </TableCell>
                   </TableRow>
                 ))}

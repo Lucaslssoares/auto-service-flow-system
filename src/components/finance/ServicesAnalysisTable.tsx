@@ -15,53 +15,53 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { services } from "@/data/mockData";
-import { calculateTotalRevenue } from "./FinancePageUtils";
 
 interface ServicesAnalysisTableProps {
   completedAppointments: any[];
 }
 
 export const ServicesAnalysisTable = ({ completedAppointments }: ServicesAnalysisTableProps) => {
-  // Count service occurrences and revenue
-  const serviceCounts: Record<string, { count: number; revenue: number }> = {};
-  const totalRevenue = calculateTotalRevenue(completedAppointments);
+  // Count service occurrences and revenue from actual appointment data
+  const serviceCounts: Record<string, { count: number; revenue: number; name: string }> = {};
+  let totalRevenue = 0;
   
   completedAppointments.forEach(app => {
-    app.serviceIds.forEach(serviceId => {
-      const service = services.find(s => s.id === serviceId);
-      if (!service) return;
-      
-      if (serviceCounts[service.id]) {
-        serviceCounts[service.id].count += 1;
-        serviceCounts[service.id].revenue += service.price;
-      } else {
-        serviceCounts[service.id] = {
-          count: 1,
-          revenue: service.price,
-        };
-      }
-    });
+    totalRevenue += app.totalPrice || 0;
+    
+    if (app.services && Array.isArray(app.services)) {
+      app.services.forEach(service => {
+        const serviceId = service.id;
+        const serviceName = service.name || 'Serviço sem nome';
+        const servicePrice = service.price || 0;
+        
+        if (serviceCounts[serviceId]) {
+          serviceCounts[serviceId].count += 1;
+          serviceCounts[serviceId].revenue += servicePrice;
+        } else {
+          serviceCounts[serviceId] = {
+            count: 1,
+            revenue: servicePrice,
+            name: serviceName,
+          };
+        }
+      });
+    }
   });
   
   const tableData = Object.keys(serviceCounts)
     .map(serviceId => {
-      const service = services.find(s => s.id === serviceId);
-      if (!service) return null;
-      
       const data = serviceCounts[serviceId];
-      const percentRevenue = (data.revenue / totalRevenue) * 100;
+      const percentRevenue = totalRevenue > 0 ? (data.revenue / totalRevenue) * 100 : 0;
       
       return {
         id: serviceId,
-        name: service.name,
+        name: data.name,
         count: data.count,
         revenue: data.revenue,
         percentRevenue,
       };
     })
-    .filter(Boolean)
-    .sort((a, b) => b!.revenue - a!.revenue);
+    .sort((a, b) => b.revenue - a.revenue);
 
   return (
     <Card>
@@ -88,14 +88,14 @@ export const ServicesAnalysisTable = ({ completedAppointments }: ServicesAnalysi
             </TableHeader>
             <TableBody>
               {tableData.map(item => (
-                <TableRow key={item!.id}>
-                  <TableCell>{item!.name}</TableCell>
-                  <TableCell className="text-right">{item!.count}</TableCell>
+                <TableRow key={item.id}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell className="text-right">{item.count}</TableCell>
                   <TableCell className="text-right">
-                    R$ {item!.revenue.toFixed(2).replace(".", ",")}
+                    R$ {item.revenue.toFixed(2).replace(".", ",")}
                   </TableCell>
                   <TableCell className="text-right">
-                    {item!.percentRevenue.toFixed(1)}%
+                    {item.percentRevenue.toFixed(1)}%
                   </TableCell>
                 </TableRow>
               ))}
