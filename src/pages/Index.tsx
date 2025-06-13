@@ -2,33 +2,41 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Car, Wrench, Clock, TrendingUp } from "lucide-react";
 import { SystemStatus } from "@/components/system/SystemStatus";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
+  const { data: dashboardData, isLoading, error } = useDashboardData();
+
+  if (error) {
+    console.error('Erro ao carregar dados do dashboard:', error);
+  }
+
   const stats = [
     {
       title: "Agendamentos Hoje",
-      value: "12",
-      description: "3 em andamento",
+      value: isLoading ? <Skeleton className="h-8 w-12" /> : dashboardData?.todayAppointments?.toString() || "0",
+      description: isLoading ? <Skeleton className="h-4 w-20" /> : `${dashboardData?.inProgressAppointments || 0} em andamento`,
       icon: Calendar,
-      trend: "+2 em relação a ontem"
+      trend: isLoading ? <Skeleton className="h-3 w-24" /> : "+2 em relação a ontem"
     },
     {
       title: "Clientes Cadastrados",
-      value: "248",
+      value: isLoading ? <Skeleton className="h-8 w-16" /> : dashboardData?.totalCustomers?.toString() || "0",
       description: "Base de clientes",
       icon: Users,
       trend: "+5 este mês"
     },
     {
       title: "Veículos",
-      value: "312",
+      value: isLoading ? <Skeleton className="h-8 w-16" /> : dashboardData?.totalVehicles?.toString() || "0",
       description: "Total cadastrado",
       icon: Car,
       trend: "+8 este mês"
     },
     {
       title: "Serviços Ativos",
-      value: "15",
+      value: isLoading ? <Skeleton className="h-8 w-12" /> : dashboardData?.totalServices?.toString() || "0",
       description: "Tipos de serviço",
       icon: Wrench,
       trend: "Catálogo completo"
@@ -42,7 +50,7 @@ const Index = () => {
     },
     {
       title: "Receita Mensal",
-      value: "R$ 12.5k",
+      value: isLoading ? <Skeleton className="h-8 w-20" /> : `R$ ${(dashboardData?.monthlyRevenue || 0).toFixed(2)}`,
       description: "Este mês",
       icon: TrendingUp,
       trend: "+15% vs mês anterior"
@@ -100,29 +108,35 @@ const Index = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="font-medium">João Silva</p>
-                  <p className="text-sm text-muted-foreground">Lavagem Completa</p>
-                </div>
-                <div className="text-sm text-muted-foreground">14:30</div>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                    <Skeleton className="h-4 w-12" />
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="font-medium">Maria Santos</p>
-                  <p className="text-sm text-muted-foreground">Enceramento</p>
-                </div>
-                <div className="text-sm text-muted-foreground">15:00</div>
+            ) : dashboardData?.recentAppointments && dashboardData.recentAppointments.length > 0 ? (
+              <div className="space-y-3">
+                {dashboardData.recentAppointments.map((appointment) => (
+                  <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium">{appointment.customerName}</p>
+                      <p className="text-sm text-muted-foreground">{appointment.serviceName}</p>
+                    </div>
+                    <div className="text-sm text-muted-foreground">{appointment.time}</div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="font-medium">Pedro Costa</p>
-                  <p className="text-sm text-muted-foreground">Lavagem Simples</p>
-                </div>
-                <div className="text-sm text-muted-foreground">15:30</div>
-              </div>
-            </div>
+            ) : (
+              <p className="text-center py-4 text-muted-foreground">
+                Nenhum agendamento para hoje
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -134,29 +148,38 @@ const Index = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm">Novo cliente cadastrado</p>
-                  <p className="text-xs text-muted-foreground">há 15 minutos</p>
-                </div>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Skeleton className="w-2 h-2 rounded-full" />
+                    <div className="flex-1 space-y-1">
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm">Agendamento confirmado</p>
-                  <p className="text-xs text-muted-foreground">há 30 minutos</p>
-                </div>
+            ) : dashboardData?.recentActivities && dashboardData.recentActivities.length > 0 ? (
+              <div className="space-y-3">
+                {dashboardData.recentActivities.map((activity) => (
+                  <div key={activity.id} className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      activity.type === 'success' ? 'bg-green-500' :
+                      activity.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                    }`}></div>
+                    <div className="flex-1">
+                      <p className="text-sm">{activity.message}</p>
+                      <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm">Serviço finalizado</p>
-                  <p className="text-xs text-muted-foreground">há 1 hora</p>
-                </div>
-              </div>
-            </div>
+            ) : (
+              <p className="text-center py-4 text-muted-foreground">
+                Nenhuma atividade recente
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
