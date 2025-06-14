@@ -49,7 +49,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
 
       if (error) {
         console.error('Erro ao fazer logout:', error.message);
-        toast.error('Erro ao fazer logout. Tente novamente.');
+        toast.error('Erro ao fazer logout. Tente novamente.'); 
         return;
       }
 
