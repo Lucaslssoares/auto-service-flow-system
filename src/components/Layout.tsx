@@ -25,9 +25,16 @@ const Layout = () => {
     
     try {
       setIsLoggingOut(true);
+      console.log('Iniciando logout...');
+      
       await signOut();
+      
+      console.log('Logout realizado com sucesso');
       toast.success('Logout realizado com sucesso');
+      
+      // Redirecionar para a página de auth
       navigate('/auth', { replace: true });
+      
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
       toast.error('Erro ao fazer logout. Tente novamente.');
@@ -78,7 +85,7 @@ const Layout = () => {
                   <DropdownMenuItem 
                     onClick={handleSignOut}
                     disabled={isLoggingOut}
-                    className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     {isLoggingOut ? 'Saindo...' : 'Sair'}
