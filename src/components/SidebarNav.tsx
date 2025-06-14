@@ -78,7 +78,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           LAVA CAR
         </h2>
         <span className={`text-sidebar-foreground text-2xl font-bold ${isOpen ? "hidden" : ""}`}>
-          LC
+          LCc
         </span>
       </div>
 
