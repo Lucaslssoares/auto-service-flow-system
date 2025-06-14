@@ -41,21 +41,27 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   const handleSignOut = async () => {
     if (isLoggingOut) return;
 
+    setIsLoggingOut(true);
+    console.log('Iniciando logout do sidebar...');
+
     try {
-      setIsLoggingOut(true);
-      console.log('Iniciando logout do sidebar...');
+      const { error } = await signOut();
 
-      // Realiza o logout via Supabase
-      await signOut();
-
-      // Garantir que o usuário seja redirecionado
-      navigate('/auth', { replace: true });
+      if (error) {
+        console.error('Erro ao fazer logout:', error.message);
+        toast.error('Erro ao fazer logout. Tente novamente.');
+        return;
+      }
 
       toast.success('Logout realizado com sucesso');
-      console.log('Logout do sidebar realizado com sucesso');
-    } catch (error) {
-      console.error('Erro ao fazer logout do sidebar:', error);
-      toast.error('Erro ao fazer logout. Tente novamente.');
+
+      // Pequeno delay para garantir que o toast apareça antes de navegar
+      setTimeout(() => {
+        navigate('/auth', { replace: true });
+      }, 500);
+    } catch (err) {
+      console.error('Erro inesperado no logout:', err);
+      toast.error('Erro inesperado ao fazer logout.');
     } finally {
       setIsLoggingOut(false);
     }
@@ -106,11 +112,13 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
             isLoggingOut && "bg-sidebar-accent/20"
           )}
         >
-          <LogOut className={cn(
-            "h-5 w-5",
-            isOpen ? "mr-3" : "mx-auto",
-            isLoggingOut && "animate-pulse"
-          )} />
+          <LogOut
+            className={cn(
+              "h-5 w-5",
+              isOpen ? "mr-3" : "mx-auto",
+              isLoggingOut && "animate-pulse"
+            )}
+          />
           <span className={isOpen ? "" : "hidden"}>
             {isLoggingOut ? "Saindo..." : "Sair"}
           </span>
