@@ -1,5 +1,5 @@
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -21,6 +21,8 @@ interface PublicAppointmentData {
 }
 
 export const usePublicAppointments = () => {
+  const queryClient = useQueryClient();
+
   const createPublicAppointmentMutation = useMutation({
     mutationFn: async (data: PublicAppointmentData) => {
       console.log('Creating public appointment with data:', data);
@@ -64,6 +66,12 @@ export const usePublicAppointments = () => {
       return result;
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas a agendamentos
+      queryClient.invalidateQueries({ queryKey: ['appointments_unified'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard_data'] });
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      queryClient.invalidateQueries({ queryKey: ['appointments_optimized'] });
+      
       toast.success('Agendamento criado com sucesso! Em breve entraremos em contato.');
     },
     onError: (error) => {

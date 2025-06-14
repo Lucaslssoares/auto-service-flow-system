@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   BarChart2,
@@ -13,6 +13,8 @@ import {
   LogOut,
   Cog
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface SidebarNavProps {
   isOpen: boolean;
@@ -21,6 +23,9 @@ interface SidebarNavProps {
 
 export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navItems = [
     {
@@ -70,6 +75,22 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
     },
   ];
 
+  const handleSignOut = async () => {
+    if (isLoggingOut) return;
+    
+    try {
+      setIsLoggingOut(true);
+      await signOut();
+      toast.success('Logout realizado com sucesso');
+      navigate('/auth', { replace: true });
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      toast.error('Erro ao fazer logout. Tente novamente.');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <div
       className={`${
@@ -108,10 +129,16 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
 
       <div className="p-4 border-t border-sidebar-border mt-auto">
         <button
-          className={`flex items-center w-full px-4 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors`}
+          onClick={handleSignOut}
+          disabled={isLoggingOut}
+          className={`flex items-center w-full px-4 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            isLoggingOut ? 'bg-sidebar-accent/20' : ''
+          }`}
         >
           <LogOut className={`h-5 w-5 ${isOpen ? "mr-3" : "mx-auto"}`} />
-          <span className={isOpen ? "" : "hidden"}>Sair</span>
+          <span className={isOpen ? "" : "hidden"}>
+            {isLoggingOut ? 'Saindo...' : 'Sair'}
+          </span>
         </button>
       </div>
     </div>
