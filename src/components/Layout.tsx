@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { SidebarNav } from "./SidebarNav";
 import { Button } from "@/components/ui/button";
 import { Menu, LogOut, User } from "lucide-react";
@@ -10,14 +10,30 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut();
+    if (isLoggingOut) return;
+    
+    try {
+      setIsLoggingOut(true);
+      await signOut();
+      toast.success('Logout realizado com sucesso');
+      navigate('/auth', { replace: true });
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      toast.error('Erro ao fazer logout. Tente novamente.');
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -46,15 +62,26 @@ const Layout = () => {
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2">
+                  <Button variant="ghost" className="flex items-center gap-2 hover:bg-gray-100">
                     <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">{user.email}</span>
+                    <span className="hidden sm:inline text-sm">
+                      {user.email?.split('@')[0] || 'Usuário'}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleSignOut}>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-3 py-2 text-sm">
+                    <p className="font-medium">Conectado como:</p>
+                    <p className="text-gray-600 truncate">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleSignOut}
+                    disabled={isLoggingOut}
+                    className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                  >
                     <LogOut className="h-4 w-4 mr-2" />
-                    Sair
+                    {isLoggingOut ? 'Saindo...' : 'Sair'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

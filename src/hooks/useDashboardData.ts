@@ -28,6 +28,8 @@ export const useDashboardData = () => {
   return useQuery({
     queryKey: ['dashboard_data'],
     queryFn: async (): Promise<DashboardData> => {
+      console.log('Atualizando dados do dashboard...');
+      
       const today = new Date();
       const startOfToday = new Date(today.setHours(0, 0, 0, 0));
       const endOfToday = new Date(today.setHours(23, 59, 59, 999));
@@ -41,28 +43,40 @@ export const useDashboardData = () => {
         .gte('date', startOfToday.toISOString())
         .lte('date', endOfToday.toISOString());
 
-      if (todayError) throw todayError;
+      if (todayError) {
+        console.error('Erro ao buscar agendamentos de hoje:', todayError);
+        throw todayError;
+      }
 
       // Buscar total de clientes
       const { count: customersCount, error: customersError } = await supabase
         .from('customers')
         .select('*', { count: 'exact', head: true });
 
-      if (customersError) throw customersError;
+      if (customersError) {
+        console.error('Erro ao buscar clientes:', customersError);
+        throw customersError;
+      }
 
       // Buscar total de veículos
       const { count: vehiclesCount, error: vehiclesError } = await supabase
         .from('vehicles')
         .select('*', { count: 'exact', head: true });
 
-      if (vehiclesError) throw vehiclesError;
+      if (vehiclesError) {
+        console.error('Erro ao buscar veículos:', vehiclesError);
+        throw vehiclesError;
+      }
 
       // Buscar total de serviços
       const { count: servicesCount, error: servicesError } = await supabase
         .from('services')
         .select('*', { count: 'exact', head: true });
 
-      if (servicesError) throw servicesError;
+      if (servicesError) {
+        console.error('Erro ao buscar serviços:', servicesError);
+        throw servicesError;
+      }
 
       // Buscar receita mensal (agendamentos completos)
       const { data: completedApps, error: revenueError } = await supabase
@@ -72,7 +86,10 @@ export const useDashboardData = () => {
         .gte('date', monthStart.toISOString())
         .lte('date', monthEnd.toISOString());
 
-      if (revenueError) throw revenueError;
+      if (revenueError) {
+        console.error('Erro ao buscar receita:', revenueError);
+        throw revenueError;
+      }
 
       // Buscar agendamentos recentes para hoje
       const { data: recentApps, error: recentError } = await supabase
@@ -90,7 +107,10 @@ export const useDashboardData = () => {
         .order('date', { ascending: true })
         .limit(5);
 
-      if (recentError) throw recentError;
+      if (recentError) {
+        console.error('Erro ao buscar agendamentos recentes:', recentError);
+        throw recentError;
+      }
 
       // Buscar atividades recentes (últimos agendamentos criados)
       const { data: activities, error: activitiesError } = await supabase
@@ -104,7 +124,10 @@ export const useDashboardData = () => {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      if (activitiesError) throw activitiesError;
+      if (activitiesError) {
+        console.error('Erro ao buscar atividades:', activitiesError);
+        throw activitiesError;
+      }
 
       // Calcular estatísticas
       const todayAppointments = todayApps?.length || 0;
@@ -151,6 +174,13 @@ export const useDashboardData = () => {
         };
       });
 
+      console.log('Dashboard atualizado:', {
+        todayAppointments,
+        totalCustomers,
+        totalVehicles,
+        totalServices
+      });
+
       return {
         todayAppointments,
         inProgressAppointments,
@@ -162,7 +192,7 @@ export const useDashboardData = () => {
         recentActivities
       };
     },
-    staleTime: 1000 * 60 * 2, // 2 minutos
+    staleTime: 1000 * 60 * 1, // 1 minuto
     retry: 2,
     retryDelay: 1000,
   });
