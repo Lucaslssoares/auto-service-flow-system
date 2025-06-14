@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -28,68 +27,32 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navItems = [
-    {
-      title: "Dashboard",
-      icon: BarChart2,
-      href: "/",
-    },
-    {
-      title: "Clientes",
-      icon: Users,
-      href: "/clientes",
-    },
-    {
-      title: "Veículos",
-      icon: Car,
-      href: "/veiculos",
-    },
-    {
-      title: "Serviços",
-      icon: Settings,
-      href: "/servicos",
-    },
-    {
-      title: "Funcionários",
-      icon: Users,
-      href: "/funcionarios",
-    },
-    {
-      title: "Agendamentos",
-      icon: Calendar,
-      href: "/agendamentos",
-    },
-    {
-      title: "Execução",
-      icon: Clipboard,
-      href: "/execucao",
-    },
-    {
-      title: "Financeiro",
-      icon: DollarSign,
-      href: "/financeiro",
-    },
-    {
-      title: "Configurações",
-      icon: Cog,
-      href: "/configuracoes",
-    },
+    { title: "Dashboard", icon: BarChart2, href: "/" },
+    { title: "Clientes", icon: Users, href: "/clientes" },
+    { title: "Veículos", icon: Car, href: "/veiculos" },
+    { title: "Serviços", icon: Settings, href: "/servicos" },
+    { title: "Funcionários", icon: Users, href: "/funcionarios" },
+    { title: "Agendamentos", icon: Calendar, href: "/agendamentos" },
+    { title: "Execução", icon: Clipboard, href: "/execucao" },
+    { title: "Financeiro", icon: DollarSign, href: "/financeiro" },
+    { title: "Configurações", icon: Cog, href: "/configuracoes" },
   ];
 
   const handleSignOut = async () => {
     if (isLoggingOut) return;
-    
+
     try {
       setIsLoggingOut(true);
       console.log('Iniciando logout do sidebar...');
-      
+
+      // Realiza o logout via Supabase
       await signOut();
-      
-      console.log('Logout do sidebar realizado com sucesso');
-      toast.success('Logout realizado com sucesso');
-      
-      // Redirecionar para a página de auth
+
+      // Garantir que o usuário seja redirecionado
       navigate('/auth', { replace: true });
-      
+
+      toast.success('Logout realizado com sucesso');
+      console.log('Logout do sidebar realizado com sucesso');
     } catch (error) {
       console.error('Erro ao fazer logout do sidebar:', error);
       toast.error('Erro ao fazer logout. Tente novamente.');
@@ -138,13 +101,18 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
         <button
           onClick={handleSignOut}
           disabled={isLoggingOut}
-          className={`flex items-center w-full px-4 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-            isLoggingOut ? 'bg-sidebar-accent/20' : ''
-          }`}
+          className={cn(
+            "flex items-center w-full px-4 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+            isLoggingOut && "bg-sidebar-accent/20"
+          )}
         >
-          <LogOut className={`h-5 w-5 ${isOpen ? "mr-3" : "mx-auto"} ${isLoggingOut ? 'animate-pulse' : ''}`} />
+          <LogOut className={cn(
+            "h-5 w-5",
+            isOpen ? "mr-3" : "mx-auto",
+            isLoggingOut && "animate-pulse"
+          )} />
           <span className={isOpen ? "" : "hidden"}>
-            {isLoggingOut ? 'Saindo...' : 'Sair'}
+            {isLoggingOut ? "Saindo..." : "Sair"}
           </span>
         </button>
       </div>
