@@ -80,11 +80,18 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
     
     try {
       setIsLoggingOut(true);
+      console.log('Iniciando logout do sidebar...');
+      
       await signOut();
+      
+      console.log('Logout do sidebar realizado com sucesso');
       toast.success('Logout realizado com sucesso');
+      
+      // Redirecionar para a página de auth
       navigate('/auth', { replace: true });
+      
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      console.error('Erro ao fazer logout do sidebar:', error);
       toast.error('Erro ao fazer logout. Tente novamente.');
     } finally {
       setIsLoggingOut(false);
@@ -135,7 +142,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
             isLoggingOut ? 'bg-sidebar-accent/20' : ''
           }`}
         >
-          <LogOut className={`h-5 w-5 ${isOpen ? "mr-3" : "mx-auto"}`} />
+          <LogOut className={`h-5 w-5 ${isOpen ? "mr-3" : "mx-auto"} ${isLoggingOut ? 'animate-pulse' : ''}`} />
           <span className={isOpen ? "" : "hidden"}>
             {isLoggingOut ? 'Saindo...' : 'Sair'}
           </span>

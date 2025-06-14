@@ -20,10 +20,9 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
 import { Plus, Loader2, Edit, Trash2, RefreshCw } from "lucide-react";
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
-import { useAppointmentsUnified } from "@/hooks/useAppointmentsUnified";
+import { useAppointments } from "@/hooks/useAppointments";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { toast } from "sonner";
 
 const Appointments = () => {
   const { 
@@ -33,8 +32,9 @@ const Appointments = () => {
     deleteAppointment,
     isUpdating,
     isDeleting,
-    getAppointmentsByStatus
-  } = useAppointmentsUnified();
+    getAppointmentsByStatus,
+    refetch
+  } = useAppointments();
   
   const [appointmentFormOpen, setAppointmentFormOpen] = useState(false);
 
@@ -74,8 +74,8 @@ const Appointments = () => {
     }
   };
 
-  const refreshData = () => {
-    window.location.reload();
+  const handleRefresh = () => {
+    refetch();
   };
 
   if (isLoading) {
@@ -99,8 +99,8 @@ const Appointments = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={refreshData}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+          <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Atualizar
           </Button>
           <Button className="gap-2" onClick={() => setAppointmentFormOpen(true)}>

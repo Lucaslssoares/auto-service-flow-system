@@ -66,10 +66,10 @@ export const usePublicAppointments = () => {
       return result;
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas a agendamentos
+      // Invalidar TODAS as queries relacionadas a agendamentos
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
       queryClient.invalidateQueries({ queryKey: ['appointments_unified'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard_data'] });
-      queryClient.invalidateQueries({ queryKey: ['appointments'] });
       queryClient.invalidateQueries({ queryKey: ['appointments_optimized'] });
       
       toast.success('Agendamento criado com sucesso! Em breve entraremos em contato.');
