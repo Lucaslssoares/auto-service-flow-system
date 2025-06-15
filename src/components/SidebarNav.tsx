@@ -1,80 +1,13 @@
-import React from "react";
+
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import {
-  Home,
-  Users,
-  Car,
-  Wrench,
-  UserCog,
-  Calendar,
-  PlayCircle,
-  DollarSign,
-  Settings,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  User, // Import para o ícone de usuário
+  BarChart2, Users, Car, Settings, Calendar, Clipboard,
+  DollarSign, LogOut, Cog
 } from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
-import { cn } from "@/lib/utils";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { SidebarNavMenu } from "./sidebar/SidebarNavMenu";
-import { SidebarNavFooter } from "./sidebar/SidebarNavFooter";
-
-// Itens do menu (AGORA COM GERENCIAMENTO DE USUÁRIOS/ADMINS)
-const menuItems = [
-  {
-    label: "Dashboard",
-    icon: Home,
-    path: "/",
-  },
-  {
-    label: "Clientes",
-    icon: Users,
-    path: "/clientes",
-  },
-  {
-    label: "Usuários",
-    icon: User, // Ícone de usuário individual
-    path: "/usuarios",
-  },
-  {
-    label: "Veículos",
-    icon: Car,
-    path: "/veiculos",
-  },
-  {
-    label: "Serviços",
-    icon: Wrench,
-    path: "/servicos",
-  },
-  {
-    label: "Funcionários",
-    icon: UserCog,
-    path: "/funcionarios",
-  },
-  {
-    label: "Agendamentos",
-    icon: Calendar,
-    path: "/agendamentos",
-  },
-  {
-    label: "Execução",
-    icon: PlayCircle,
-    path: "/execucao",
-  },
-  {
-    label: "Financeiro",
-    icon: DollarSign,
-    path: "/financeiro",
-  },
-  {
-    label: "Configurações",
-    icon: Settings,
-    path: "/configuracoes",
-  },
-];
+import { toast } from "sonner";
 
 interface SidebarNavProps {
   isOpen: boolean;
@@ -82,137 +15,98 @@ interface SidebarNavProps {
 }
 
 export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
-  useSecureAuth();
-  const navigate = useNavigate();
   const location = useLocation();
-  const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { signOut, isLoading } = useSecureAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Sidebar width classes
-  const sidebarWidth = isOpen || isMobile ? "w-60 sm:w-72" : "w-16";
-  const showOverlay = isMobile && isOpen;
+  const navItems = [
+    { title: "Dashboard", icon: BarChart2, href: "/" },
+    { title: "Clientes", icon: Users, href: "/clientes" },
+    { title: "Veículos", icon: Car, href: "/veiculos" },
+    { title: "Serviços", icon: Settings, href: "/servicos" },
+    { title: "Funcionários", icon: Users, href: "/funcionarios" },
+    { title: "Agendamentos", icon: Calendar, href: "/agendamentos" },
+    { title: "Execução", icon: Clipboard, href: "/execucao" },
+    { title: "Financeiro", icon: DollarSign, href: "/financeiro" },
+    { title: "Configurações", icon: Cog, href: "/configuracoes" },
+  ];
+
+  const handleSignOut = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      toast.success('Logout realizado com sucesso');
+      navigate('/auth', { replace: true });
+    } catch (err) {
+      toast.error('Erro inesperado ao fazer logout.');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
-    <>
-      {/* Overlay para mobile */}
-      {showOverlay && (
-        <div
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm transition-opacity animate-fade-in"
-          onClick={() => setIsOpen(false)}
-          aria-label="Fechar menu"
-        />
-      )}
-      {/* Sidebar */}
-      <nav
-        className={cn(
-          "h-full fixed top-0 left-0 z-40 flex flex-col bg-sidebar-DEFAULT border-r border-sidebar-border shadow-lg transition-all duration-300",
-          sidebarWidth,
-          isMobile
-            ? [
-                "h-screen",
-                "overflow-hidden",
-                isOpen
-                  ? "left-0 animate-slide-in-right"
-                  : "-left-72 pointer-events-none",
-                "transition-all duration-300 ease-in-out",
-              ]
-            : [
-                "relative",
-                "!z-10",
-                !isOpen && "hover:z-40",
-              ]
-        )}
-        aria-label="Sidebar"
-        style={{
-          minWidth: isMobile && !isOpen ? 0 : undefined,
-          width: isOpen || !isMobile ? undefined : 64,
-        }}
-      >
-        {/* Topo: logo/nome + botão de menu */}
-        <div
-          className={cn(
-            "flex items-center gap-2 h-16 px-3",
-            "bg-sidebar-accent border-b border-sidebar-border"
-          )}
-        >
-          {/* Collapse/expand button (desktop) */}
-          {!isMobile && (
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className={cn(
-                "mr-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary group",
-                "p-2 bg-sidebar-accent hover:bg-sidebar-primary"
-              )}
-              aria-label={isOpen ? "Reduzir menu" : "Expandir menu"}
-              tabIndex={0}
-              type="button"
-            >
-              {isOpen ? (
-                <ChevronLeft className="w-6 h-6 text-sidebar-primary-foreground transition-transform group-hover:-translate-x-1" />
-              ) : (
-                <ChevronRight className="w-6 h-6 text-sidebar-primary-foreground transition-transform group-hover:translate-x-1" />
-              )}
-            </button>
-          )}
-
-          {/* Logo/título (se aberto OU mobile) */}
-          <span
-            className={cn(
-              "font-bold text-lg tracking-tight text-sidebar-primary-foreground flex-1 transition-all duration-300 select-none",
-              !isOpen && !isMobile ? "opacity-0 w-0 overflow-hidden" : "block text-center"
-            )}
-            style={{
-              transition: "opacity 0.2s, width 0.2s",
-            }}
-          >
-            Lava Car
-          </span>
-          {isMobile && (
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className={cn(
-                "ml-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary group",
-                "p-2 bg-sidebar-accent hover:bg-sidebar-primary"
-              )}
-              aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
-              tabIndex={0}
-              type="button"
-            >
-              {isOpen ? (
-                <X className="w-6 h-6 text-sidebar-primary-foreground transition group-hover:rotate-90" />
-              ) : (
-                <Menu className="w-6 h-6 text-sidebar-primary-foreground" />
-              )}
-            </button>
-          )}
-        </div>
-        {/* Menu */}
-        <SidebarNavMenu isOpen={isOpen} isMobile={isMobile} closeSidebar={() => setIsOpen(false)} />
-        {/* Footer */}
-        <SidebarNavFooter isOpen={isOpen} isMobile={isMobile} />
+    <div
+      className={`${
+        isOpen ? "w-64" : "w-20"
+      } bg-sidebar flex flex-col transition-all duration-300 ease-in-out shadow-lg`}
+    >
+      <div className="flex items-center justify-center h-16 border-b border-sidebar-border">
+        <h2 className={`text-sidebar-foreground font-bold ${isOpen ? "" : "hidden"}`}>
+          LAVA CAR
+        </h2>
+        <span className={`text-sidebar-foreground text-2xl font-bold ${isOpen ? "hidden" : ""}`}>
+          LC
+        </span>
+      </div>
+      <nav className="mt-5 flex-grow">
+        <ul className="space-y-2 px-2">
+          {navItems.map((item) => (
+            <li key={item.href}>
+              <Link
+                to={item.href}
+                className={cn(
+                  "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
+                  location.pathname === item.href
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                )}
+              >
+                <item.icon className={`h-5 w-5 ${isOpen ? "mr-3" : "mx-auto"}`} />
+                <span className={isOpen ? "" : "hidden"}>{item.title}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </nav>
-      {/* Botão flutuante (mobile only, menu fechado) */}
-      {isMobile && !isOpen && (
+      <div className="p-4 border-t border-sidebar-border mt-auto">
         <button
-          className="fixed bottom-4 left-4 z-50 bg-sidebar-accent border border-sidebar-border rounded-full shadow-xl p-3 transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sidebar-ring"
-          onClick={() => setIsOpen(true)}
-          aria-label="Abrir menu"
-          tabIndex={0}
-          type="button"
+          onClick={handleSignOut}
+          disabled={isLoggingOut || isLoading}
+          className={cn(
+            "flex items-center w-full px-4 py-2 text-sm font-medium rounded-md transition-colors",
+            "bg-red-100 hover:bg-red-200 text-red-700 hover:text-red-900",
+            "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500",
+            (isLoggingOut || isLoading) && "opacity-60 cursor-not-allowed"
+          )}
+          style={{ minHeight: 44 }}
         >
-          <Menu className="w-7 h-7 text-sidebar-primary-foreground" />
+          <LogOut
+            className={cn(
+              "h-5 w-5",
+              isOpen ? "mr-3" : "mx-auto",
+              isLoggingOut && "animate-pulse"
+            )}
+          />
+          <span className={isOpen ? "" : "hidden"}>
+            {isLoggingOut ? "Saindo..." : "Sair"}
+          </span>
+          {!isOpen && (
+            <span className="sr-only">{isLoggingOut ? "Saindo..." : "Sair"}</span>
+          )}
         </button>
-      )}
-      {/* Custom scrollbar para sidebar */}
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 0.4em;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(120, 120, 120, 0.13);
-          border-radius: 20px;
-        }
-      `}
-      </style>
-    </>
+      </div>
+    </div>
   );
 }
