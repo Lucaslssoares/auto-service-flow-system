@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Home, Users, Car, Wrench, UserCog, Calendar, PlayCircle, DollarSign, Settings, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -60,6 +59,11 @@ const menuItems = [
     label: "Configurações",
     icon: Settings,
     path: "/configuracoes",
+  },
+  {
+    label: "Perfil",
+    icon: User,
+    path: "/perfil",
   },
 ];
 
