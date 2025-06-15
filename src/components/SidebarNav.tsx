@@ -3,17 +3,10 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
-  BarChart2,
-  Users,
-  Car,
-  Settings,
-  Calendar,
-  Clipboard,
-  DollarSign,
-  LogOut,
-  Cog
+  BarChart2, Users, Car, Settings, Calendar, Clipboard,
+  DollarSign, LogOut, Cog
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { toast } from "sonner";
 
 interface SidebarNavProps {
@@ -24,7 +17,7 @@ interface SidebarNavProps {
 export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, isLoading } = useSecureAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navItems = [
@@ -41,20 +34,12 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
 
   const handleSignOut = async () => {
     if (isLoggingOut) return;
-
     setIsLoggingOut(true);
-    console.log('Iniciando logout do sidebar...');
-
     try {
       await signOut();
-
       toast.success('Logout realizado com sucesso');
-
-      setTimeout(() => {
-        navigate('/auth', { replace: true });
-      }, 500);
+      navigate('/auth', { replace: true });
     } catch (err) {
-      console.error('Erro inesperado no logout:', err);
       toast.error('Erro inesperado ao fazer logout.');
     } finally {
       setIsLoggingOut(false);
@@ -75,7 +60,6 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           LC
         </span>
       </div>
-
       <nav className="mt-5 flex-grow">
         <ul className="space-y-2 px-2">
           {navItems.map((item) => (
@@ -96,18 +80,17 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           ))}
         </ul>
       </nav>
-
       <div className="p-4 border-t border-sidebar-border mt-auto">
         <button
           onClick={handleSignOut}
-          disabled={isLoggingOut}
+          disabled={isLoggingOut || isLoading}
           className={cn(
             "flex items-center w-full px-4 py-2 text-sm font-medium rounded-md transition-colors",
             "bg-red-100 hover:bg-red-200 text-red-700 hover:text-red-900",
             "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500",
-            isLoggingOut && "opacity-60 cursor-not-allowed"
+            (isLoggingOut || isLoading) && "opacity-60 cursor-not-allowed"
           )}
-          style={{ minHeight: 44 }} // aumenta área de toque
+          style={{ minHeight: 44 }}
         >
           <LogOut
             className={cn(
