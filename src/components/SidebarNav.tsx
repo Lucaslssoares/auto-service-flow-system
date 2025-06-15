@@ -14,13 +14,14 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  User, // Import para o ícone de usuário
 } from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { cn } from "@/lib/utils";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// Itens do menu (SEM GERENCIAMENTO DE USUÁRIOS/ADMINS)
+// Itens do menu (AGORA COM GERENCIAMENTO DE USUÁRIOS/ADMINS)
 const menuItems = [
   {
     label: "Dashboard",
@@ -31,6 +32,11 @@ const menuItems = [
     label: "Clientes",
     icon: Users,
     path: "/clientes",
+  },
+  {
+    label: "Usuários",
+    icon: User, // Ícone de usuário individual
+    path: "/usuarios",
   },
   {
     label: "Veículos",
@@ -260,3 +266,4 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
     </>
   );
 }
+
