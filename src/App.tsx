@@ -1,4 +1,3 @@
-
 /**
  * Componente principal da aplicação
  * Configurado com Error Boundary, providers e roteamento seguro
@@ -16,7 +15,7 @@ import Customers from "./pages/Customers";
 import Vehicles from "./pages/Vehicles";
 import Services from "./pages/Services";
 import Employees from "./pages/Employees";
-import AppointmentsOptimized from "./pages/AppointmentsOptimized";
+import Appointments from "./pages/Appointments";
 import ExecutionPage from "./pages/ExecutionPage";
 import FinancePage from "./pages/FinancePage";
 import Settings from "./pages/Settings";
@@ -87,7 +86,7 @@ const App = () => (
                 <Route path="/veiculos" element={<Vehicles />} />
                 <Route path="/servicos" element={<Services />} />
                 <Route path="/funcionarios" element={<Employees />} />
-                <Route path="/agendamentos" element={<AppointmentsOptimized />} />
+                <Route path="/agendamentos" element={<Appointments />} />
                 <Route path="/execucao" element={<ExecutionPage />} />
                 <Route path="/financeiro" element={<FinancePage />} />
                 <Route path="/configuracoes" element={<Settings />} />
