@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Home,
@@ -20,6 +19,8 @@ import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { cn } from "@/lib/utils";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SidebarNavMenu } from "./sidebar/SidebarNavMenu";
+import { SidebarNavFooter } from "./sidebar/SidebarNavFooter";
 
 // Itens do menu (AGORA COM GERENCIAMENTO DE USUÁRIOS/ADMINS)
 const menuItems = [
@@ -89,11 +90,6 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   // Sidebar width classes
   const sidebarWidth = isOpen || isMobile ? "w-60 sm:w-72" : "w-16";
   const showOverlay = isMobile && isOpen;
-
-  const navigateTo = (path: string) => {
-    setIsOpen(false);
-    navigate(path);
-  };
 
   return (
     <>
@@ -190,55 +186,9 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           )}
         </div>
         {/* Menu */}
-        <ul
-          className={cn(
-            "flex-1 mt-4 space-y-1 overflow-y-auto custom-scrollbar",
-            isOpen || isMobile ? "pl-2 pr-2" : "pl-1 pr-1"
-          )}
-          tabIndex={0}
-        >
-          {menuItems.map((item) => {
-            const active = location.pathname === item.path;
-            return (
-              <li key={item.label}>
-                <button
-                  className={cn(
-                    "group flex items-center gap-3 py-2 px-3 rounded-md transition-all cursor-pointer select-none whitespace-nowrap font-medium text-sidebar-foreground w-full",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground",
-                    "active:bg-sidebar-accent/80 outline-none",
-                    active
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground font-semibold shadow-sm"
-                      : "",
-                    !isOpen && !isMobile
-                      ? "justify-center px-2 py-3"
-                      : "px-3",
-                    "duration-200"
-                  )}
-                  tabIndex={0}
-                  aria-current={active ? "page" : undefined}
-                  onClick={() => navigateTo(item.path)}
-                  type="button"
-                >
-                  <item.icon className={cn("w-5 h-5 shrink-0", active && "text-sidebar-primary-foreground")} />
-                  {(isOpen || isMobile) && (
-                    <span className="ml-1 truncate">{item.label}</span>
-                  )}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        {/* Footer: sempre visível no mobile / só expandido no desktop */}
-        <div
-          className={cn(
-            "mt-auto py-3 px-2 bg-sidebar border-t border-sidebar-border transition-all text-center",
-            !(isOpen || isMobile) && "opacity-0 h-0 p-0 overflow-hidden"
-          )}
-        >
-          <p className="text-xs text-sidebar-foreground/70">
-            © {new Date().getFullYear()} Lava Car
-          </p>
-        </div>
+        <SidebarNavMenu isOpen={isOpen} isMobile={isMobile} closeSidebar={() => setIsOpen(false)} />
+        {/* Footer */}
+        <SidebarNavFooter isOpen={isOpen} isMobile={isMobile} />
       </nav>
       {/* Botão flutuante (mobile only, menu fechado) */}
       {isMobile && !isOpen && (
@@ -266,4 +216,3 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
     </>
   );
 }
-
