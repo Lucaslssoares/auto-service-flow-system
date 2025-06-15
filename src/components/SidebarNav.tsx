@@ -1,5 +1,6 @@
+
 import React from "react";
-import { Home, Calendar, Users, Settings } from "lucide-react";
+import { Home, Calendar, Settings } from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +11,8 @@ interface SidebarNavProps {
 }
 
 export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
-  const { hasPermission } = useSecureAuth();
+  // O hook continua, mas removemos tudo referente à permissão "manage_users"
+  useSecureAuth();
   const navigate = useNavigate();
 
   const navigateTo = (path: string) => {
@@ -75,21 +77,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
               <span className="ml-2">Agendamentos</span>
             </a>
           </li>
-          {hasPermission && hasPermission("manage_users") && (
-            <li>
-              <a
-                href="/admin/users"
-                className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigateTo("/admin/users");
-                }}
-              >
-                <Users className="w-5 h-5" />
-                <span className="ml-2">Usuários/Admins</span>
-              </a>
-            </li>
-          )}
+          {/* Removido o item Usuários/Admins */}
           <li>
             <a
               href="/settings"
