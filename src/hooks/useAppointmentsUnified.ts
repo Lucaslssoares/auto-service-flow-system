@@ -36,7 +36,12 @@ export const useAppointmentsUnified = () => {
   const queryClient = useQueryClient();
 
   // Query principal para buscar todos os agendamentos
-  const { data: appointments = [], isLoading, error } = useQuery({
+  const {
+    data: appointments = [],
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
     queryKey: ['appointments_unified'],
     queryFn: async (): Promise<Appointment[]> => {
       console.log('Buscando agendamentos...');
@@ -258,6 +263,7 @@ export const useAppointmentsUnified = () => {
     isUpdating: updateStatusMutation.isPending,
     isDeleting: deleteAppointmentMutation.isPending,
     getAppointmentsByStatus,
-    getTodayAppointments
+    getTodayAppointments,
+    refetch
   };
 };
