@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Home, Users, Car, Wrench, UserCog, Calendar, PlayCircle, DollarSign, Settings, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -72,6 +73,7 @@ export function SidebarNavMenu({ isOpen, isMobile, closeSidebar }: SidebarNavMen
   const location = useLocation();
 
   const navigateTo = (path: string) => {
+    console.log("[SidebarNavMenu] Navegando para:", path);
     if (isMobile) closeSidebar();
     navigate(path);
   };
@@ -117,3 +119,4 @@ export function SidebarNavMenu({ isOpen, isMobile, closeSidebar }: SidebarNavMen
     </ul>
   );
 }
+
