@@ -11,10 +11,19 @@ import { AdvancedSettingsTab } from "@/components/settings/AdvancedSettingsTab";
 import { useSettings } from "@/hooks/useSettings";
 
 const Settings = () => {
-  const { settings, loading, updateSetting, handleSave } = useSettings();
+  const { settings, loading, updateSetting, handleSave, missingUserSettings } = useSettings();
+
+  if (!settings) {
+    return <div className="p-8 text-center text-gray-700">Carregando configurações...</div>;
+  }
 
   return (
     <div className="space-y-6">
+      {missingUserSettings && (
+        <div className="bg-yellow-100 text-yellow-800 border border-yellow-200 rounded p-4 mb-2 text-sm font-semibold">
+          <span>⚠️ Atenção: Você está visualizando as configurações padrão pois nenhuma configuração específica foi cadastrada para seu usuário.</span>
+        </div>
+      )}
       <SettingsHeader onSave={handleSave} loading={loading} />
 
       <Tabs defaultValue="general" className="space-y-4">
