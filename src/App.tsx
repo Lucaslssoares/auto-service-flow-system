@@ -24,6 +24,7 @@ import ClientAppointment from "./pages/ClientAppointment";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { SecureAuthProvider } from "./hooks/useSecureAuth";
 import { getSecurityHeaders } from "./utils/security";
+import Profile from "@/pages/Profile";
 
 /**
  * Configuração do React Query com configurações otimizadas para produção
@@ -65,39 +66,42 @@ if (typeof document !== 'undefined') {
 /**
  * Componente principal da aplicação com todos os providers necessários
  */
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <SecureAuthProvider>
-            <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/agendar" element={<ClientAppointment />} />
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Index />} />
-                <Route path="/clientes" element={<Customers />} />
-                <Route path="/veiculos" element={<Vehicles />} />
-                <Route path="/servicos" element={<Services />} />
-                <Route path="/funcionarios" element={<Employees />} />
-                <Route path="/agendamentos" element={<Appointments />} />
-                <Route path="/execucao" element={<ExecutionPage />} />
-                <Route path="/financeiro" element={<FinancePageOptimized />} /> {/* updated route */}
-                <Route path="/configuracoes" element={<Settings />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </SecureAuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
+function App() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <SecureAuthProvider>
+              <Routes>
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/agendar" element={<ClientAppointment />} />
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }>
+                  <Route index element={<Index />} />
+                  <Route path="/clientes" element={<Customers />} />
+                  <Route path="/veiculos" element={<Vehicles />} />
+                  <Route path="/servicos" element={<Services />} />
+                  <Route path="/funcionarios" element={<Employees />} />
+                  <Route path="/agendamentos" element={<Appointments />} />
+                  <Route path="/execucao" element={<ExecutionPage />} />
+                  <Route path="/financeiro" element={<FinancePageOptimized />} /> {/* updated route */}
+                  <Route path="/configuracoes" element={<Settings />} />
+                  <Route path="/perfil" element={<Profile />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </SecureAuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}
 
 export default App;
