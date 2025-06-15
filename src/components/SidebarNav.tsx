@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// Itens do menu
+// Itens do menu (SEM GERENCIAMENTO DE USUÁRIOS/ADMINS)
 const menuItems = [
   {
     label: "Dashboard",
@@ -91,7 +91,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay para mobile */}
       {showOverlay && (
         <div
           className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm transition-opacity animate-fade-in"
@@ -114,9 +114,9 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
                 "transition-all duration-300 ease-in-out",
               ]
             : [
-                "relative", // Para desktop: relative impede sobreposição
+                "relative",
                 "!z-10",
-                !isOpen && "hover:z-40", // melhora overlays de dropdowns se houver
+                !isOpen && "hover:z-40",
               ]
         )}
         aria-label="Sidebar"
@@ -125,14 +125,14 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           width: isOpen || !isMobile ? undefined : 64,
         }}
       >
-        {/* Top section: logo/nome + botão de menu */}
+        {/* Topo: logo/nome + botão de menu */}
         <div
           className={cn(
             "flex items-center gap-2 h-16 px-3",
             "bg-sidebar-accent border-b border-sidebar-border"
           )}
         >
-          {/* Collapse/expand button - Desktop */}
+          {/* Collapse/expand button (desktop) */}
           {!isMobile && (
             <button
               onClick={() => setIsOpen(!isOpen)}
