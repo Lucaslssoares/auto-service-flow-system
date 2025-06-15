@@ -10,10 +10,62 @@ import {
   PlayCircle,
   DollarSign,
   Settings,
+  Menu,
+  X,
 } from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+// Itens do menu
+const menuItems = [
+  {
+    label: "Dashboard",
+    icon: Home,
+    path: "/",
+  },
+  {
+    label: "Clientes",
+    icon: Users,
+    path: "/clientes",
+  },
+  {
+    label: "Veículos",
+    icon: Car,
+    path: "/veiculos",
+  },
+  {
+    label: "Serviços",
+    icon: Wrench,
+    path: "/servicos",
+  },
+  {
+    label: "Funcionários",
+    icon: UserCog,
+    path: "/funcionarios",
+  },
+  {
+    label: "Agendamentos",
+    icon: Calendar,
+    path: "/agendamentos",
+  },
+  {
+    label: "Execução",
+    icon: PlayCircle,
+    path: "/execucao",
+  },
+  {
+    label: "Financeiro",
+    icon: DollarSign,
+    path: "/financeiro",
+  },
+  {
+    label: "Configurações",
+    icon: Settings,
+    path: "/configuracoes",
+  },
+];
 
 interface SidebarNavProps {
   isOpen: boolean;
@@ -23,6 +75,12 @@ interface SidebarNavProps {
 export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   useSecureAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+
+  // Sidebar width classes
+  const sidebarWidth = isOpen ? "w-64" : isMobile ? "w-0" : "w-16";
+  // Show overlay on mobile when sidebar open
+  const showOverlay = isMobile && isOpen;
 
   const navigateTo = (path: string) => {
     setIsOpen(false);
@@ -30,160 +88,121 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   };
 
   return (
-    <nav
-      className={cn(
-        "bg-white shadow-md h-full fixed md:static z-40 left-0 top-0 transition-all duration-200",
-        isOpen ? "w-64" : "w-16"
+    <>
+      {/* Overlay for mobile */}
+      {showOverlay && (
+        <div
+          className="fixed inset-0 z-40 bg-black/20 animate-fade-in"
+          onClick={() => setIsOpen(false)}
+          aria-label="Fechar menu"
+        />
       )}
-    >
-      <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between px-4 py-3">
-          <span className="font-bold text-lg">Lava Car</span>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden focus:outline-none"
+      <nav
+        className={cn(
+          "bg-white shadow-md h-full fixed z-50 top-0 left-0 transition-all duration-200 flex flex-col",
+          sidebarWidth,
+          isMobile
+            ? [
+                "h-screen",
+                "transition-all",
+                "duration-300",
+                "overflow-hidden",
+                isOpen
+                  ? "left-0"
+                  : "-left-64", // esconde fora da tela se fechado no mobile
+                "ease-in-out",
+                "border-r"
+              ]
+            : "border-r"
+        )}
+        aria-label="Sidebar"
+        style={{
+          minWidth: isMobile && !isOpen ? 0 : undefined,
+          width: isOpen || !isMobile ? undefined : 64,
+        }}
+      >
+        <div
+          className={cn(
+            "flex items-center",
+            isMobile ? "px-4 py-4 h-16 min-h-16" : "px-2 py-4 h-16 min-h-16"
+          )}
+        >
+          {/* Logo ou Nome */}
+          <span
+            className={cn(
+              "font-bold text-lg tracking-tight text-gray-900 flex-1",
+              !isOpen && !isMobile ? "hidden" : "block text-center"
+            )}
           >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+            Lava Car
+          </span>
+          {/* Botão fechar/hamburguer */}
+          {isMobile && (
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="ml-2 rounded focus:outline-none focus:ring-2 focus:ring-primary p-1"
+              aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              {isOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          )}
         </div>
-        <ul className="flex-1 space-y-2 mt-6">
-          <li>
-            <a
-              href="/"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/");
-              }}
-            >
-              <Home className="w-5 h-5" />
-              <span className="ml-2">Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/clientes"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/clientes");
-              }}
-            >
-              <Users className="w-5 h-5" />
-              <span className="ml-2">Clientes</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/veiculos"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/veiculos");
-              }}
-            >
-              <Car className="w-5 h-5" />
-              <span className="ml-2">Veículos</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/servicos"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/servicos");
-              }}
-            >
-              <Wrench className="w-5 h-5" />
-              <span className="ml-2">Serviços</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/funcionarios"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/funcionarios");
-              }}
-            >
-              <UserCog className="w-5 h-5" />
-              <span className="ml-2">Funcionários</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/agendamentos"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/agendamentos");
-              }}
-            >
-              <Calendar className="w-5 h-5" />
-              <span className="ml-2">Agendamentos</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/execucao"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/execucao");
-              }}
-            >
-              <PlayCircle className="w-5 h-5" />
-              <span className="ml-2">Execução</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/financeiro"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/financeiro");
-              }}
-            >
-              <DollarSign className="w-5 h-5" />
-              <span className="ml-2">Financeiro</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/configuracoes"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigateTo("/configuracoes");
-              }}
-            >
-              <Settings className="w-5 h-5" />
-              <span className="ml-2">Configurações</span>
-            </a>
-          </li>
+        {/* Menu */}
+        <ul
+          className={cn(
+            "flex-1 mt-4 space-y-1",
+            isOpen || isMobile ? "pl-0 pr-2" : "pl-0 pr-0"
+          )}
+        >
+          {menuItems.map((item) => (
+            <li key={item.label}>
+              <a
+                href={item.path}
+                className={cn(
+                  "group flex items-center gap-2 px-4 py-2 rounded transition-colors cursor-pointer select-none whitespace-nowrap",
+                  "text-gray-700 hover:bg-gray-100",
+                  !isOpen && !isMobile ? "justify-center px-2" : ""
+                )}
+                tabIndex={0}
+                onClick={e => {
+                  e.preventDefault();
+                  navigateTo(item.path);
+                }}
+              >
+                <item.icon className="w-5 h-5" />
+                {(isOpen || isMobile) && (
+                  <span className="ml-2 truncate">{item.label}</span>
+                )}
+              </a>
+            </li>
+          ))}
         </ul>
-        <div className="p-4">
-          <p className="text-center text-gray-500 text-xs">
+        {/* Footer only if expanded */}
+        <div
+          className={cn(
+            "w-full mt-auto py-2",
+            (isOpen || isMobile) ? "block" : "hidden"
+          )}
+        >
+          <p className="text-center text-gray-400 text-xs">
             © {new Date().getFullYear()} Lava Car
           </p>
         </div>
-      </div>
-    </nav>
+      </nav>
+      {/* Show floating menu button on mobile if closed */}
+      {isMobile && !isOpen && (
+        <button
+          className="fixed bottom-4 left-4 z-50 bg-white border rounded-full shadow-lg p-2 transition hover:scale-105 focus:outline-none"
+          onClick={() => setIsOpen(true)}
+          aria-label="Abrir menu"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      )}
+    </>
   );
 }
