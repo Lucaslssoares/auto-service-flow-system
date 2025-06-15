@@ -3,9 +3,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Appointment, AppointmentStatus } from '@/types';
+import { useSecureAuth } from "@/hooks/useSecureAuth";
 
 export const useAppointmentMutations = () => {
   const queryClient = useQueryClient();
+  const { user } = useSecureAuth(); // Get user
 
   const createAppointmentMutation = useMutation({
     mutationFn: async (appointmentData: Omit<Appointment, 'id' | 'customerName' | 'vehicleInfo'>) => {
@@ -14,7 +16,7 @@ export const useAppointmentMutations = () => {
         throw new Error('Cliente e veículo são obrigatórios');
       }
 
-      // Start transaction-like operation
+      // Insert with user_id!
       const { data: appointment, error: appointmentError } = await supabase
         .from('appointments')
         .insert({
@@ -24,7 +26,8 @@ export const useAppointmentMutations = () => {
           date: appointmentData.date.toISOString(),
           status: appointmentData.status || 'scheduled',
           notes: appointmentData.notes || null,
-          total_price: appointmentData.totalPrice || 0
+          total_price: appointmentData.totalPrice || 0,
+          user_id: user?.id // <--- Set on insert
         })
         .select()
         .single();

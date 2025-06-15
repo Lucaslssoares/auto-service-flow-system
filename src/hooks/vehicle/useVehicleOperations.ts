@@ -4,11 +4,13 @@ import { Vehicle, VehicleType } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useErrorHandler } from "@/components/ErrorBoundary";
+import { useSecureAuth } from "@/hooks/useSecureAuth";
 
 export const useVehicleOperations = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { handleError } = useErrorHandler();
+  const { user } = useSecureAuth(); // Get current user ID
 
   const fetchVehicles = async (): Promise<Vehicle[]> => {
     try {
@@ -53,6 +55,7 @@ export const useVehicleOperations = () => {
 
   const addVehicle = async (vehicleData: Omit<Vehicle, "id" | "customerName">): Promise<Vehicle | null> => {
     try {
+      // Set the current user's ID
       const { data, error } = await supabase
         .from("vehicles")
         .insert([{
@@ -63,6 +66,7 @@ export const useVehicleOperations = () => {
           color: vehicleData.color,
           type: vehicleData.type as string,
           customer_id: vehicleData.customerId,
+          user_id: user?.id, // <--- Add user_id!
         }])
         .select(`
           *,
@@ -115,6 +119,7 @@ export const useVehicleOperations = () => {
           color: vehicleData.color,
           type: vehicleData.type as string,
           customer_id: vehicleData.customerId,
+          user_id: user?.id, // <--- Add user_id!
         })
         .eq("id", id)
         .select(`

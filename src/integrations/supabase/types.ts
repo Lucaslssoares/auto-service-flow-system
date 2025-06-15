@@ -69,6 +69,7 @@ export type Database = {
           notes: string | null
           status: string
           total_price: number
+          user_id: string
           vehicle_id: string | null
         }
         Insert: {
@@ -80,6 +81,7 @@ export type Database = {
           notes?: string | null
           status: string
           total_price: number
+          user_id?: string
           vehicle_id?: string | null
         }
         Update: {
@@ -91,6 +93,7 @@ export type Database = {
           notes?: string | null
           status?: string
           total_price?: number
+          user_id?: string
           vehicle_id?: string | null
         }
         Relationships: [
@@ -146,6 +149,7 @@ export type Database = {
           id: string
           name: string
           phone: string
+          user_id: string
         }
         Insert: {
           cpf: string
@@ -154,6 +158,7 @@ export type Database = {
           id?: string
           name: string
           phone: string
+          user_id?: string
         }
         Update: {
           cpf?: string
@@ -162,6 +167,7 @@ export type Database = {
           id?: string
           name?: string
           phone?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -500,6 +506,7 @@ export type Database = {
           model: string
           plate: string
           type: string
+          user_id: string
           year: number | null
         }
         Insert: {
@@ -511,6 +518,7 @@ export type Database = {
           model: string
           plate: string
           type: string
+          user_id?: string
           year?: number | null
         }
         Update: {
@@ -522,6 +530,7 @@ export type Database = {
           model?: string
           plate?: string
           type?: string
+          user_id?: string
           year?: number | null
         }
         Relationships: [
