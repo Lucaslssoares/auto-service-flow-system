@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -31,15 +30,15 @@ const Auth = () => {
     confirmPassword: "",
   });
 
+  // Redireciona imediatamente se já estiver logado, sem depender do carregamento completo
   useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session && mounted) {
         navigate("/");
       }
-    };
-    checkUser();
+    });
+    return () => { mounted = false; };
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -57,11 +56,13 @@ const Auth = () => {
       }
 
       if (data.user) {
+        // Redireciona imediatamente após sucesso no login
         toast({
           title: "Login realizado com sucesso!",
           description: "Bem-vindo ao Lava Car",
         });
         navigate("/");
+        return; // Para garantir saída rápida
       }
     } catch (error: any) {
       toast({
@@ -122,7 +123,6 @@ const Auth = () => {
           ]);
 
         if (roleError) {
-          // Soft fail—show warning, don't block signup
           toast({
             title: "Cadastrado (mas houve erro ao registrar papel)!",
             description: roleError.message,
@@ -135,7 +135,9 @@ const Auth = () => {
           });
         }
 
+        // Redireciona imediatamente após cadastro bem-sucedido
         navigate("/");
+        return;
       }
     } catch (error: any) {
       toast({
