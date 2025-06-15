@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { SidebarNav } from "./SidebarNav";
 import { Button } from "@/components/ui/button";
@@ -20,6 +19,13 @@ const Layout = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  // Monitora o estado do usuário para garantir redirect caso ele seja deslogado
+  useEffect(() => {
+    if (user === null) {
+      navigate('/auth', { replace: true });
+    }
+  }, [user, navigate]);
+
   const handleSignOut = async () => {
     if (isLoggingOut) return;
     
@@ -31,9 +37,6 @@ const Layout = () => {
       
       console.log('Logout realizado com sucesso');
       toast.success('Logout realizado com sucesso');
-      
-      // Redirecionar para a página de auth
-      navigate('/auth', { replace: true });
       
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
