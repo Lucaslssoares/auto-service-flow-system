@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { SettingsData } from "@/types/settings";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
@@ -21,16 +21,15 @@ export const useSettings = () => {
       if (!user?.id) return;
       setLoading(true);
 
-      // Exemplo: tente buscar as configurações do supabase para o usuário atual
-      // NOTA: Troque este código assim que houver uma tabela 'user_settings' no banco
+      // Buscar as configurações específicas do usuário
       const { data, error } = await supabase
         .from("user_settings")
-        .select("*")
+        .select("settings")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
-        // Fallback para "default" apenas na primeira vez ou enquanto não há user_settings
+        // Mostra fallback padrão se não houver settings salvos para o usuário
         setMissingUserSettings(true);
         setSettings({
           businessName: "Lava Car Premium",
@@ -40,35 +39,42 @@ export const useSettings = () => {
           workingHours: {
             start: "07:00",
             end: "18:00",
-            daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+            daysOfWeek: [
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+            ],
           },
           appointmentSettings: {
             allowSameDayBooking: true,
             maxAdvanceDays: 30,
             slotDuration: 30,
             bufferTime: 15,
-            autoConfirm: false
+            autoConfirm: false,
           },
           financialSettings: {
             currency: "BRL",
             taxRate: 0,
             defaultCommissionRate: 10,
             allowDiscounts: true,
-            requirePaymentConfirmation: true
+            requirePaymentConfirmation: true,
           },
           notifications: {
             emailNotifications: true,
             smsNotifications: false,
             appointmentReminders: true,
-            paymentReminders: true
+            paymentReminders: true,
           },
           executionSettings: {
             allowMultipleEmployees: true,
             requireProfitDistribution: true,
             autoCalculateCommissions: false,
             minProfitPercentage: 5,
-            maxEmployeesPerService: 5
-          }
+            maxEmployeesPerService: 5,
+          },
         });
       } else {
         setSettings(data.settings as SettingsData);
@@ -84,14 +90,13 @@ export const useSettings = () => {
   }, [user?.id]);
 
   const updateSetting = (path: string, value: any) => {
-    if (!settings) return;
-    const keys = path.split('.');
-    setSettings(prev => {
+    setSettings((prev) => {
       if (!prev) return prev;
-      const newSettings = { ...prev };
-      let current: any = newSettings;
+      const keys = path.split(".");
+      const newSettings: any = { ...prev };
+      let current = newSettings;
       for (let i = 0; i < keys.length - 1; i++) {
-        if (current[keys[i]] === undefined) {
+        if (typeof current[keys[i]] !== "object" || current[keys[i]] === null) {
           current[keys[i]] = {};
         }
         current = current[keys[i]];
@@ -106,11 +111,41 @@ export const useSettings = () => {
     setLoading(true);
 
     try {
-      // Adapte assim que houver tabela user_settings no banco para salvar as settings com user_id
-      // Exemplo:
-      // await supabase.from("user_settings").upsert({ user_id: user.id, settings });
+      // Verifica se já existe row para o usuário
+      const { data: existing, error: fetchError } = await supabase
+        .from("user_settings")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-      toast.success("✅ Configurações salvas! (modo demo)");
+      let result;
+
+      if (existing?.id) {
+        // Atualização
+        result = await supabase
+          .from("user_settings")
+          .update({
+            settings: settings,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existing.id);
+
+        if (result.error) throw result.error;
+        toast.success("✅ Configurações salvas!");
+      } else {
+        // Primeira vez: inserir novo registro
+        result = await supabase.from("user_settings").insert([
+          {
+            user_id: user.id,
+            settings: settings,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ]);
+        if (result.error) throw result.error;
+        toast.success("✅ Configurações salvas pela primeira vez!");
+        setMissingUserSettings(false);
+      }
     } catch (error: any) {
       toast.error(`❌ Erro: ${error.message || "Erro ao salvar"}`);
     } finally {
@@ -121,7 +156,7 @@ export const useSettings = () => {
   // Validação  
   const isValid =
     !!settings?.businessName?.trim() &&
-    !!settings?.businessEmail?.includes('@') &&
+    !!settings?.businessEmail?.includes("@") &&
     !!settings?.workingHours.start &&
     !!settings?.workingHours.end &&
     settings.workingHours.start < settings.workingHours.end;
@@ -132,6 +167,6 @@ export const useSettings = () => {
     updateSetting,
     handleSave,
     isValid,
-    missingUserSettings // avisa se está exibindo um fallback global e não settings por usuário
+    missingUserSettings, // avisa se está exibindo um fallback global e não settings por usuário
   };
 };
