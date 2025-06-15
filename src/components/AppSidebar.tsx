@@ -11,20 +11,9 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import {
-  Home,
-  Users,
-  Car,
-  Wrench,
-  UserCog,
-  Calendar,
-  PlayCircle,
-  DollarSign,
-  Settings,
-} from "lucide-react";
+import { Home, Users, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-// Itens essenciais do menu (ajuste conforme necessário)
 const items = [
   {
     label: "Dashboard",
@@ -32,39 +21,9 @@ const items = [
     icon: Home,
   },
   {
-    label: "Clientes",
+    label: "Usuários",
     path: "/clientes",
     icon: Users,
-  },
-  {
-    label: "Veículos",
-    path: "/veiculos",
-    icon: Car,
-  },
-  {
-    label: "Serviços",
-    path: "/servicos",
-    icon: Wrench,
-  },
-  {
-    label: "Funcionários",
-    path: "/funcionarios",
-    icon: UserCog,
-  },
-  {
-    label: "Agendamentos",
-    path: "/agendamentos",
-    icon: Calendar,
-  },
-  {
-    label: "Execução",
-    path: "/execucao",
-    icon: PlayCircle,
-  },
-  {
-    label: "Financeiro",
-    path: "/financeiro",
-    icon: DollarSign,
   },
   {
     label: "Configurações",
@@ -82,7 +41,14 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>
-            <span className="font-bold text-lg text-sidebar-primary-foreground tracking-tight">Lava Car</span>
+            <span
+              className="block text-2xl lg:text-3xl font-extrabold text-sidebar-primary-foreground tracking-tight text-center py-6 select-none"
+              style={{
+                letterSpacing: "0.04em",
+              }}
+            >
+              LAVA CAR
+            </span>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -91,11 +57,15 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     isActive={location.pathname === item.path}
                     onClick={() => navigate(item.path)}
-                    // Deixa responsivo e amigável para teclado
                     tabIndex={0}
+                    className={`flex items-center gap-4 px-6 py-3 my-2 rounded-xl ${
+                      location.pathname === item.path
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                        : "hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground transition-colors"
+                    }`}
                   >
-                    <item.icon className="w-5 h-5" />
-                    <span>{item.label}</span>
+                    <item.icon className="w-7 h-7" />
+                    <span className="text-base lg:text-lg font-semibold">{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -104,10 +74,24 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <p className="text-xs text-sidebar-foreground/70 w-full text-center">
+        <p className="text-xs text-sidebar-foreground/70 w-full text-center pb-4">
           © {new Date().getFullYear()} Lava Car
         </p>
       </SidebarFooter>
+      {/* Estilos extras para deixar o fundo mais escuro e elegante */}
+      <style>{`
+        .ui-sidebar {
+          background: linear-gradient(180deg, hsl(var(--sidebar-background)) 90%, #193559 100%);
+          border-right: 2px solid hsl(var(--sidebar-border));
+        }
+        @media (max-width: 640px) {
+          .ui-sidebar {
+            min-width: 0 !important;
+            width: 70vw !important;
+            max-width: 20rem;
+          }
+        }
+      `}</style>
     </Sidebar>
   );
 }
