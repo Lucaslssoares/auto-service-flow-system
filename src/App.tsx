@@ -17,7 +17,7 @@ import Services from "./pages/Services";
 import Employees from "./pages/Employees";
 import Appointments from "./pages/Appointments";
 import ExecutionPage from "./pages/ExecutionPage";
-import FinancePage from "./pages/FinancePage";
+import FinancePageOptimized from "./pages/FinancePageOptimized"; // updated import
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import ClientAppointment from "./pages/ClientAppointment";
@@ -88,7 +88,7 @@ const App = () => (
                 <Route path="/funcionarios" element={<Employees />} />
                 <Route path="/agendamentos" element={<Appointments />} />
                 <Route path="/execucao" element={<ExecutionPage />} />
-                <Route path="/financeiro" element={<FinancePage />} />
+                <Route path="/financeiro" element={<FinancePageOptimized />} /> {/* updated route */}
                 <Route path="/configuracoes" element={<Settings />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
