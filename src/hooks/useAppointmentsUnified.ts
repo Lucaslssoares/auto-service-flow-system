@@ -40,7 +40,7 @@ export const useAppointmentsUnified = () => {
     queryKey: ['appointments_unified'],
     queryFn: async (): Promise<Appointment[]> => {
       console.log('Buscando agendamentos...');
-      
+
       const { data, error } = await supabase
         .from('appointments')
         .select(`
@@ -55,7 +55,7 @@ export const useAppointmentsUnified = () => {
           customers!appointments_customer_id_fkey(name),
           vehicles!appointments_vehicle_id_fkey(plate, model, brand, color),
           employees!appointments_employee_id_fkey(name),
-          appointment_services(
+          appointment_services!appointment_services_appointment_id_fkey(
             services!appointment_services_service_id_fkey(id, name, price, duration, commission_percentage)
           )
         `)

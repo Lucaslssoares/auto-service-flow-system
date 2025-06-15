@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Appointment, Service } from '@/types';
@@ -49,7 +48,7 @@ export const useAppointmentsQuery = () => {
           customers!appointments_customer_id_fkey(name),
           vehicles!appointments_vehicle_id_fkey(plate, model, brand, color),
           employees!appointments_employee_id_fkey(name),
-          appointment_services(
+          appointment_services!appointment_services_appointment_id_fkey(
             services!appointment_services_service_id_fkey(id, name, price, duration, commission_percentage)
           )
         `)
