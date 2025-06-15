@@ -85,7 +85,10 @@ const Layout = () => {
                   <DropdownMenuItem 
                     onClick={handleSignOut}
                     disabled={isLoggingOut}
-                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                    className={cn(
+                      "text-red-600 focus:text-red-700 focus:bg-red-100 cursor-pointer",
+                      "hover:bg-red-50 data-[highlighted]:bg-red-50 font-semibold"
+                    )}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     {isLoggingOut ? 'Saindo...' : 'Sair'}
@@ -104,5 +107,9 @@ const Layout = () => {
     </div>
   );
 };
+
+function cn(...classes: (string | undefined | null | false)[]) {
+  return classes.filter(Boolean).join(" ");
+}
 
 export default Layout;

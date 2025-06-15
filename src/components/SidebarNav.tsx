@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,6 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
 
       toast.success('Logout realizado com sucesso');
 
-      // Pequeno delay para garantir que o toast apareça antes de navegar
       setTimeout(() => {
         navigate('/auth', { replace: true });
       }, 500);
@@ -102,9 +102,12 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           onClick={handleSignOut}
           disabled={isLoggingOut}
           className={cn(
-            "flex items-center w-full px-4 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-            isLoggingOut && "bg-sidebar-accent/20"
+            "flex items-center w-full px-4 py-2 text-sm font-medium rounded-md transition-colors",
+            "bg-red-100 hover:bg-red-200 text-red-700 hover:text-red-900",
+            "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500",
+            isLoggingOut && "opacity-60 cursor-not-allowed"
           )}
+          style={{ minHeight: 44 }} // aumenta área de toque
         >
           <LogOut
             className={cn(
@@ -116,6 +119,9 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           <span className={isOpen ? "" : "hidden"}>
             {isLoggingOut ? "Saindo..." : "Sair"}
           </span>
+          {!isOpen && (
+            <span className="sr-only">{isLoggingOut ? "Saindo..." : "Sair"}</span>
+          )}
         </button>
       </div>
     </div>
