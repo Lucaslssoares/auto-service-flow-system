@@ -77,7 +77,8 @@ export const useSettings = () => {
           },
         });
       } else {
-        setSettings(data.settings as SettingsData);
+        // Fix: Cast to unknown before SettingsData for type compatibility
+        setSettings(data.settings as unknown as SettingsData);
         setMissingUserSettings(false);
       }
 
@@ -125,7 +126,7 @@ export const useSettings = () => {
         result = await supabase
           .from("user_settings")
           .update({
-            settings: settings,
+            settings: settings as unknown, // Fix: Cast to unknown for JSON
             updated_at: new Date().toISOString(),
           })
           .eq("id", existing.id);
@@ -137,7 +138,7 @@ export const useSettings = () => {
         result = await supabase.from("user_settings").insert([
           {
             user_id: user.id,
-            settings: settings,
+            settings: settings as unknown, // Fix: Cast to unknown for JSON
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           },
