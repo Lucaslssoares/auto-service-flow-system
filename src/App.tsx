@@ -21,10 +21,11 @@ import FinancePageOptimized from "./pages/FinancePageOptimized"; // updated impo
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import ClientAppointment from "./pages/ClientAppointment";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { SecureAuthProvider } from "./hooks/useSecureAuth";
 import { getSecurityHeaders } from "./utils/security";
 import Profile from "@/pages/Profile";
+import UserManagement from "./pages/UserManagement";
 
 /**
  * Configuração do React Query com configurações otimizadas para produção
@@ -85,12 +86,14 @@ function App() {
                 }>
                   <Route index element={<Index />} />
                   <Route path="/clientes" element={<Customers />} />
+                  {/* Adicionado rota correta para Usuários */}
+                  <Route path="/usuarios" element={<UserManagement />} />
                   <Route path="/veiculos" element={<Vehicles />} />
                   <Route path="/servicos" element={<Services />} />
                   <Route path="/funcionarios" element={<Employees />} />
                   <Route path="/agendamentos" element={<Appointments />} />
                   <Route path="/execucao" element={<ExecutionPage />} />
-                  <Route path="/financeiro" element={<FinancePageOptimized />} /> {/* updated route */}
+                  <Route path="/financeiro" element={<FinancePageOptimized />} />
                   <Route path="/configuracoes" element={<Settings />} />
                   <Route path="/perfil" element={<Profile />} />
                   <Route path="*" element={<NotFound />} />
