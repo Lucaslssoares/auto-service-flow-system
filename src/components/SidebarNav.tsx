@@ -1,6 +1,16 @@
 
 import React from "react";
-import { Home, Calendar, Settings } from "lucide-react";
+import {
+  Home,
+  Users,
+  Car,
+  Wrench,
+  UserCog,
+  Calendar,
+  PlayCircle,
+  DollarSign,
+  Settings,
+} from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +21,6 @@ interface SidebarNavProps {
 }
 
 export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
-  // O hook continua, mas removemos tudo referente à permissão "manage_users"
   useSecureAuth();
   const navigate = useNavigate();
 
@@ -66,25 +75,102 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           </li>
           <li>
             <a
-              href="/appointments"
+              href="/clientes"
               className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
               onClick={(e) => {
                 e.preventDefault();
-                navigateTo("/appointments");
+                navigateTo("/clientes");
+              }}
+            >
+              <Users className="w-5 h-5" />
+              <span className="ml-2">Clientes</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/veiculos"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo("/veiculos");
+              }}
+            >
+              <Car className="w-5 h-5" />
+              <span className="ml-2">Veículos</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/servicos"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo("/servicos");
+              }}
+            >
+              <Wrench className="w-5 h-5" />
+              <span className="ml-2">Serviços</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/funcionarios"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo("/funcionarios");
+              }}
+            >
+              <UserCog className="w-5 h-5" />
+              <span className="ml-2">Funcionários</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/agendamentos"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo("/agendamentos");
               }}
             >
               <Calendar className="w-5 h-5" />
               <span className="ml-2">Agendamentos</span>
             </a>
           </li>
-          {/* Removido o item Usuários/Admins */}
           <li>
             <a
-              href="/settings"
+              href="/execucao"
               className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
               onClick={(e) => {
                 e.preventDefault();
-                navigateTo("/settings");
+                navigateTo("/execucao");
+              }}
+            >
+              <PlayCircle className="w-5 h-5" />
+              <span className="ml-2">Execução</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/financeiro"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo("/financeiro");
+              }}
+            >
+              <DollarSign className="w-5 h-5" />
+              <span className="ml-2">Financeiro</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/configuracoes"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100 transition"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo("/configuracoes");
               }}
             >
               <Settings className="w-5 h-5" />
