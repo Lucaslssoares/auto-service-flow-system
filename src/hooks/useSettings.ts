@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { SettingsData } from "@/types/settings";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types"; // Step 1: Import Json type
 
 /**
  * Hook para Configurações do Sistema
@@ -126,7 +127,7 @@ export const useSettings = () => {
         result = await supabase
           .from("user_settings")
           .update({
-            settings: settings as unknown, // Fix: Cast to unknown for JSON
+            settings: settings as Json, // Step 2: Use as Json here
             updated_at: new Date().toISOString(),
           })
           .eq("id", existing.id);
@@ -138,7 +139,7 @@ export const useSettings = () => {
         result = await supabase.from("user_settings").insert([
           {
             user_id: user.id,
-            settings: settings as unknown, // Fix: Cast to unknown for JSON
+            settings: settings as Json, // Step 2: Use as Json here
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           },
