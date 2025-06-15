@@ -127,7 +127,7 @@ export const useSettings = () => {
         result = await supabase
           .from("user_settings")
           .update({
-            settings: settings as Json, // Step 2: Use as Json here
+            settings: settings as unknown as Json, // Fix: proper double-cast for TS compatibility
             updated_at: new Date().toISOString(),
           })
           .eq("id", existing.id);
@@ -139,7 +139,7 @@ export const useSettings = () => {
         result = await supabase.from("user_settings").insert([
           {
             user_id: user.id,
-            settings: settings as Json, // Step 2: Use as Json here
+            settings: settings as unknown as Json, // Fix: proper double-cast for TS compatibility
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           },
