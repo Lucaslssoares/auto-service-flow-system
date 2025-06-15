@@ -10,6 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
+// INSERT: Import uuid (for deterministic ID, fallback if needed)
+import { v4 as uuidv4 } from "uuid";
+
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -88,10 +91,14 @@ const Auth = () => {
     }
 
     try {
+      // CRITICAL! Setup emailRedirectTo to avoid issues (per best practices)
+      const redirectUrl = `${window.location.origin}/`;
+
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             name: signupData.name,
           },
@@ -103,10 +110,31 @@ const Auth = () => {
       }
 
       if (data.user) {
-        toast({
-          title: "Cadastro realizado com sucesso!",
-          description: "Você foi logado automaticamente",
-        });
+        // Grant default role "user" in user_roles table
+        const { user } = data;
+        const { error: roleError } = await supabase
+          .from("user_roles")
+          .insert([
+            {
+              user_id: user.id,
+              role: "user"
+            }
+          ]);
+
+        if (roleError) {
+          // Soft fail—show warning, don't block signup
+          toast({
+            title: "Cadastrado (mas houve erro ao registrar papel)!",
+            description: roleError.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Cadastro realizado com sucesso!",
+            description: "Você foi logado automaticamente",
+          });
+        }
+
         navigate("/");
       }
     } catch (error: any) {

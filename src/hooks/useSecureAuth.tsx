@@ -3,6 +3,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { checkPermission, rateLimiter, maskSensitiveData } from "@/utils/security";
 import { toast } from "sonner";
+import { useUserRoles, AppRole } from "@/hooks/useUserRoles";
 
 interface Profile {
   id: string;
@@ -45,6 +46,9 @@ export const SecureAuthProvider = ({ children }: { children: React.ReactNode }) 
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Hook to get current user roles
+  const { roles, hasRole, loading: rolesLoading } = useUserRoles();
+
   // Função para buscar o perfil do usuário
   const fetchUserProfile = useCallback(async (userId: string) => {
     try {
@@ -66,11 +70,20 @@ export const SecureAuthProvider = ({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  // Função para verificar permissões
+  // Função para verificar permissões (agora baseada em user_roles + mapeamento)
   const hasPermission = useCallback((permission: string): boolean => {
-    if (!profile?.role) return false;
-    return checkPermission(profile.role, permission);
-  }, [profile]);
+    // Map permission → required role(s)
+    const permissionRoleMap: Record<string, AppRole[]> = {
+      read: ["admin", "manager", "employee", "user"],
+      write: ["admin", "manager", "employee"],
+      delete: ["admin", "manager"],
+      manage_users: ["admin"],
+      view_finance: ["admin", "manager"],
+      // add more as needed
+    };
+    const requiredRoles = permissionRoleMap[permission] ?? [];
+    return roles.some((role) => requiredRoles.includes(role));
+  }, [roles]);
 
   // Função para refresh da sessão
   const refreshSession = useCallback(async (): Promise<void> => {
@@ -186,11 +199,14 @@ export const SecureAuthProvider = ({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
+  // UPDATE: When loading, consider both user/profile *and* roles loading state for isLoading
+  const effectiveLoading = isLoading || rolesLoading;
+
   const value = {
     user,
     profile,
     session,
-    isLoading,
+    isLoading: effectiveLoading,
     hasPermission,
     signOut,
     refreshSession,
