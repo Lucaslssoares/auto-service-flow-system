@@ -12,6 +12,8 @@ import {
   Settings,
   Menu,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { cn } from "@/lib/utils";
@@ -79,7 +81,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
 
   // Sidebar width classes
   const sidebarWidth =
-    isOpen || isMobile ? "w-60 sm:w-72" : "w-16"; // slightly wider for better mobile UX
+    isOpen || isMobile ? "w-60 sm:w-72" : "w-16";
   const showOverlay = isMobile && isOpen;
 
   const navigateTo = (path: string) => {
@@ -97,12 +99,11 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           aria-label="Fechar menu"
         />
       )}
+      {/* Sidebar */}
       <nav
         className={cn(
-          // Adapt colors for background and border considering dark/light
           "h-full fixed top-0 left-0 z-40 flex flex-col bg-sidebar-DEFAULT border-r border-sidebar-border shadow-lg transition-all duration-300 ease-in-out",
           sidebarWidth,
-          // Animation for show/hide
           isMobile
             ? [
                 "h-screen",
@@ -112,7 +113,8 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
                   : "-left-72", // hidden slide out
                 "transition-all duration-300 ease-in-out",
               ]
-            : ""
+            : "relative", // <- Apenas para desktop: relative impede sobreposição!
+          !isMobile && "z-10" // desktop sidebar atrás do header
         )}
         aria-label="Sidebar"
         style={{
@@ -123,10 +125,28 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
         {/* Top section: logo/nome + botão de menu */}
         <div
           className={cn(
-            "flex items-center gap-2 h-16 px-3",
-            "bg-sidebar-accent"
+            "flex items-center gap-2 h-16 px-3 bg-sidebar-accent relative"
           )}
         >
+          {/* Collapse/expand button - SEMPRE no desktop, substitui título quando sidebar está fechada */}
+          {!isMobile && (
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={cn(
+                "mr-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary",
+                "p-2 bg-sidebar-accent hover:bg-sidebar-primary"
+              )}
+              aria-label={isOpen ? "Reduzir menu" : "Expandir menu"}
+            >
+              {isOpen ? (
+                <ChevronLeft className="w-6 h-6 text-sidebar-primary-foreground" />
+              ) : (
+                <ChevronRight className="w-6 h-6 text-sidebar-primary-foreground" />
+              )}
+            </button>
+          )}
+
+          {/* Título (só aparece se aberto OU mobile) */}
           <span
             className={cn(
               "font-bold text-lg tracking-tight text-sidebar-primary-foreground flex-1 transition-all duration-300",
@@ -189,7 +209,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
             </li>
           ))}
         </ul>
-        {/* Footer: always visible no mobile / only expanded desktop */}
+        {/* Footer: sempre visível no mobile / só expandido no desktop */}
         <div
           className={cn(
             "mt-auto py-3 px-2 bg-sidebar border-t border-sidebar-border transition-all",
