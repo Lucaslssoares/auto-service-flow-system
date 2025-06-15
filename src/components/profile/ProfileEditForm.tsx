@@ -82,8 +82,8 @@ export function ProfileEditForm() {
           disabled={loading}
         />
       </div>
-      <Button type="submit" className="w-full" loading={loading}>
-        Salvar alterações
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? "Salvando..." : "Salvar alterações"}
       </Button>
     </form>
   );
