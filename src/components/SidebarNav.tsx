@@ -78,8 +78,8 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   const isMobile = useIsMobile();
 
   // Sidebar width classes
-  const sidebarWidth = isOpen ? "w-64" : isMobile ? "w-0" : "w-16";
-  // Show overlay on mobile when sidebar open
+  const sidebarWidth =
+    isOpen || isMobile ? "w-60 sm:w-72" : "w-16"; // slightly wider for better mobile UX
   const showOverlay = isMobile && isOpen;
 
   const navigateTo = (path: string) => {
@@ -92,28 +92,27 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
       {/* Overlay for mobile */}
       {showOverlay && (
         <div
-          className="fixed inset-0 z-40 bg-black/20 animate-fade-in"
+          className="fixed inset-0 z-30 bg-black/30 animate-fade-in"
           onClick={() => setIsOpen(false)}
           aria-label="Fechar menu"
         />
       )}
       <nav
         className={cn(
-          "bg-white shadow-md h-full fixed z-50 top-0 left-0 transition-all duration-200 flex flex-col",
+          // Adapt colors for background and border considering dark/light
+          "h-full fixed top-0 left-0 z-40 flex flex-col bg-sidebar-DEFAULT border-r border-sidebar-border shadow-lg transition-all duration-300 ease-in-out",
           sidebarWidth,
+          // Animation for show/hide
           isMobile
             ? [
                 "h-screen",
-                "transition-all",
-                "duration-300",
                 "overflow-hidden",
                 isOpen
-                  ? "left-0"
-                  : "-left-64", // esconde fora da tela se fechado no mobile
-                "ease-in-out",
-                "border-r"
+                  ? "left-0 animate-slide-in-right"
+                  : "-left-72", // hidden slide out
+                "transition-all duration-300 ease-in-out",
               ]
-            : "border-r"
+            : ""
         )}
         aria-label="Sidebar"
         style={{
@@ -121,32 +120,37 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
           width: isOpen || !isMobile ? undefined : 64,
         }}
       >
+        {/* Top section: logo/nome + botão de menu */}
         <div
           className={cn(
-            "flex items-center",
-            isMobile ? "px-4 py-4 h-16 min-h-16" : "px-2 py-4 h-16 min-h-16"
+            "flex items-center gap-2 h-16 px-3",
+            "bg-sidebar-accent"
           )}
         >
-          {/* Logo ou Nome */}
           <span
             className={cn(
-              "font-bold text-lg tracking-tight text-gray-900 flex-1",
-              !isOpen && !isMobile ? "hidden" : "block text-center"
+              "font-bold text-lg tracking-tight text-sidebar-primary-foreground flex-1 transition-all duration-300",
+              !isOpen && !isMobile ? "opacity-0 w-0 overflow-hidden" : "block text-center"
             )}
+            style={{
+              transition: "opacity 0.2s, width 0.2s",
+            }}
           >
             Lava Car
           </span>
-          {/* Botão fechar/hamburguer */}
           {isMobile && (
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="ml-2 rounded focus:outline-none focus:ring-2 focus:ring-primary p-1"
+              className={cn(
+                "ml-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary",
+                "p-2 bg-sidebar-accent hover:bg-sidebar-primary"
+              )}
               aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
             >
               {isOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-6 h-6 text-sidebar-primary-foreground" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-6 h-6 text-sidebar-primary-foreground" />
               )}
             </button>
           )}
@@ -154,8 +158,8 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
         {/* Menu */}
         <ul
           className={cn(
-            "flex-1 mt-4 space-y-1",
-            isOpen || isMobile ? "pl-0 pr-2" : "pl-0 pr-0"
+            "flex-1 mt-4 space-y-1 overflow-y-auto custom-scrollbar",
+            isOpen || isMobile ? "pl-2 pr-2" : "pl-1 pr-1"
           )}
         >
           {menuItems.map((item) => (
@@ -163,9 +167,13 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
               <a
                 href={item.path}
                 className={cn(
-                  "group flex items-center gap-2 px-4 py-2 rounded transition-colors cursor-pointer select-none whitespace-nowrap",
-                  "text-gray-700 hover:bg-gray-100",
-                  !isOpen && !isMobile ? "justify-center px-2" : ""
+                  "group flex items-center gap-3 py-2 px-3 rounded-md transition-all cursor-pointer select-none whitespace-nowrap font-medium text-sidebar-foreground",
+                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground",
+                  "active:bg-sidebar-accent/80",
+                  !isOpen && !isMobile
+                    ? "justify-center px-2 py-3"
+                    : "px-3",
+                  "duration-200"
                 )}
                 tabIndex={0}
                 onClick={e => {
@@ -173,36 +181,46 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
                   navigateTo(item.path);
                 }}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className="w-5 h-5 shrink-0" />
                 {(isOpen || isMobile) && (
-                  <span className="ml-2 truncate">{item.label}</span>
+                  <span className="ml-1 truncate">{item.label}</span>
                 )}
               </a>
             </li>
           ))}
         </ul>
-        {/* Footer only if expanded */}
+        {/* Footer: always visible no mobile / only expanded desktop */}
         <div
           className={cn(
-            "w-full mt-auto py-2",
-            (isOpen || isMobile) ? "block" : "hidden"
+            "mt-auto py-3 px-2 bg-sidebar border-t border-sidebar-border transition-all",
+            !(isOpen || isMobile) && "opacity-0 h-0 p-0 overflow-hidden"
           )}
         >
-          <p className="text-center text-gray-400 text-xs">
+          <p className="text-center text-xs text-sidebar-foreground/70">
             © {new Date().getFullYear()} Lava Car
           </p>
         </div>
       </nav>
-      {/* Show floating menu button on mobile if closed */}
+      {/* Floating menu button (mobile only, when menu is closed) */}
       {isMobile && !isOpen && (
         <button
-          className="fixed bottom-4 left-4 z-50 bg-white border rounded-full shadow-lg p-2 transition hover:scale-105 focus:outline-none"
+          className="fixed bottom-4 left-4 z-50 bg-sidebar-accent border border-sidebar-border rounded-full shadow-xl p-3 transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sidebar-ring"
           onClick={() => setIsOpen(true)}
           aria-label="Abrir menu"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-7 h-7 text-sidebar-primary-foreground" />
         </button>
       )}
+      {/* Custom scrollbar for sidebar (small utility) */}
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 0.4em;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(120, 120, 120, 0.13);
+          border-radius: 20px;
+        }
+      `}</style>
     </>
   );
 }
