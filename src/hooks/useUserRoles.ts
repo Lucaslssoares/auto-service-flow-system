@@ -11,25 +11,28 @@ export function useUserRoles() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user?.id) {
-      setRoles([]);
-      setLoading(false);
-      return;
-    }
+    const fetchRoles = async () => {
+      if (!user?.id) {
+        setRoles([]);
+        setLoading(false);
+        return;
+      }
 
-    setLoading(true);
-    supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .then(({ data, error }) => {
-        if (error) {
-          setRoles([]);
-        } else {
-          setRoles((data ?? []).map((row) => row.role as AppRole));
-        }
-      })
-      .finally(() => setLoading(false));
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+
+      if (error) {
+        setRoles([]);
+      } else {
+        setRoles((data ?? []).map((row) => row.role as AppRole));
+      }
+      setLoading(false);
+    };
+
+    fetchRoles();
   }, [user?.id]);
 
   const hasRole = (role: AppRole) => roles.includes(role);
