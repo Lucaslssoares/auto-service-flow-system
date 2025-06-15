@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +18,7 @@ import { useCustomerManagement } from '@/hooks/useCustomerManagement';
 import { useVehicleManagement } from '@/hooks/useVehicleManagement';
 import { useServiceManagement } from '@/hooks/useServiceManagement';
 import { useEmployeeManagement } from '@/hooks/useEmployeeManagement';
-import { useAppointments } from '@/hooks/useAppointments';
+import { useAppointmentsUnified } from '@/hooks/useAppointmentsUnified';
 
 const appointmentSchema = z.object({
   customerId: z.string().min(1, 'Selecione um cliente'),
@@ -44,7 +43,7 @@ export const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
   const { vehicles } = useVehicleManagement();
   const { services } = useServiceManagement();
   const { employees } = useEmployeeManagement();
-  const { createAppointment, isCreating } = useAppointments();
+  const { createAppointment, isCreating } = useAppointmentsUnified();
 
   const form = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentSchema),

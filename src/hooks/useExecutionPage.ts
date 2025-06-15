@@ -1,11 +1,10 @@
-
 import { useState } from "react";
-import { useAppointments } from "@/hooks/useAppointments";
+import { useAppointmentsUnified } from "@/hooks/useAppointmentsUnified";
 import { useServiceExecutions } from "@/hooks/useServiceExecutions";
 import { format } from "date-fns";
 
 export const useExecutionPage = () => {
-  const { appointments, updateStatus, isLoading: appointmentsLoading } = useAppointments();
+  const { appointments, updateStatus, isLoading: appointmentsLoading } = useAppointmentsUnified();
   const { executions, startExecution, completeExecution, isLoading: executionsLoading } = useServiceExecutions();
   
   const [teamWorkModal, setTeamWorkModal] = useState<{

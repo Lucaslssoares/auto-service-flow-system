@@ -45,13 +45,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
     console.log('Iniciando logout do sidebar...');
 
     try {
-      const { error } = await signOut();
-
-      if (error) {
-        console.error('Erro ao fazer logout:', error.message);
-        toast.error('Erro ao fazer logout. Tente novamente.'); 
-        return;
-      }
+      await signOut();
 
       toast.success('Logout realizado com sucesso');
 

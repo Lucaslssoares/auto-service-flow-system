@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,21 +19,21 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
 import { Plus, Loader2, Edit, Trash2, RefreshCw } from "lucide-react";
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
-import { useAppointments } from "@/hooks/useAppointments";
+import { useAppointmentsUnified } from "@/hooks/useAppointmentsUnified";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const Appointments = () => {
-  const { 
-    appointments, 
-    isLoading, 
-    updateStatus, 
+  const {
+    appointments,
+    isLoading,
+    updateStatus,
     deleteAppointment,
     isUpdating,
     isDeleting,
     getAppointmentsByStatus,
     refetch
-  } = useAppointments();
+  } = useAppointmentsUnified();
   
   const [appointmentFormOpen, setAppointmentFormOpen] = useState(false);
 
