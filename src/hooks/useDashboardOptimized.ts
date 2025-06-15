@@ -75,7 +75,7 @@ export const useDashboardOptimized = () => {
       };
     },
     staleTime: 1000 * 60 * 5, // 5 minutos
-    cacheTime: 1000 * 60 * 10, // 10 minutos
+    gcTime: 1000 * 60 * 10, // 10 minutos (renamed from cacheTime)
     retry: 1,
     retryDelay: 500,
   });

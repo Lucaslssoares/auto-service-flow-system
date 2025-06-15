@@ -69,7 +69,7 @@ export const useExecutionAppointments = () => {
       }));
     },
     staleTime: 1000 * 60 * 2, // 2 minutos
-    cacheTime: 1000 * 60 * 5, // 5 minutos
+    gcTime: 1000 * 60 * 5, // 5 minutos (renamed from cacheTime)
     retry: 1,
     retryDelay: 500,
   });

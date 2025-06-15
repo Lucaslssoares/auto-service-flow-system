@@ -53,6 +53,7 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
     queryKey: ['finance_optimized', selectedPeriod, periodDates],
     queryFn: async (): Promise<FinanceData> => {
       // Single optimized query for completed appointments with all related data
+      // Fixed the ambiguous relationship by specifying the exact foreign key
       const { data: appointments, error } = await supabase
         .from('appointments')
         .select(`
@@ -62,7 +63,7 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
           customers!appointments_customer_id_fkey(name),
           vehicles!appointments_vehicle_id_fkey(plate, model, brand),
           employees!appointments_employee_id_fkey(name),
-          appointment_services(
+          appointment_services!appointment_services_appointment_id_fkey(
             services!appointment_services_service_id_fkey(name, price)
           )
         `)
