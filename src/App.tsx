@@ -1,3 +1,4 @@
+
 /**
  * Componente principal da aplicação
  * Configurado com Error Boundary, providers e roteamento seguro
@@ -17,10 +18,11 @@ import Services from "./pages/Services";
 import Employees from "./pages/Employees";
 import Appointments from "./pages/Appointments";
 import ExecutionPage from "./pages/ExecutionPage";
-import FinancePageOptimized from "./pages/FinancePageOptimized"; // updated import
+import FinancePageOptimized from "./pages/FinancePageOptimized";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import ClientAppointment from "./pages/ClientAppointment";
+import UserPermissions from "./pages/UserPermissions";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { SecureAuthProvider } from "./hooks/useSecureAuth";
 import { getSecurityHeaders } from "./utils/security";
@@ -88,8 +90,13 @@ const App = () => (
                 <Route path="/funcionarios" element={<Employees />} />
                 <Route path="/agendamentos" element={<Appointments />} />
                 <Route path="/execucao" element={<ExecutionPage />} />
-                <Route path="/financeiro" element={<FinancePageOptimized />} /> {/* updated route */}
+                <Route path="/financeiro" element={<FinancePageOptimized />} />
                 <Route path="/configuracoes" element={<Settings />} />
+                <Route path="/permissoes" element={
+                  <ProtectedRoute requiredPermission="manage_users">
+                    <UserPermissions />
+                  </ProtectedRoute>
+                } />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
