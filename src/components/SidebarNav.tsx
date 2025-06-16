@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   BarChart2, Users, Car, Settings, Calendar, Clipboard,
-  DollarSign, LogOut, Cog
+  DollarSign, LogOut, Cog, Shield
 } from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { toast } from "sonner";
@@ -17,7 +16,7 @@ interface SidebarNavProps {
 export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { signOut, isLoading } = useSecureAuth();
+  const { signOut, isLoading, hasPermission } = useSecureAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navItems = [
@@ -31,6 +30,11 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
     { title: "Financeiro", icon: DollarSign, href: "/financeiro" },
     { title: "Configurações", icon: Cog, href: "/configuracoes" },
   ];
+
+  // Adicionar item de permissões apenas para admins
+  if (hasPermission("manage_users")) {
+    navItems.push({ title: "Permissões", icon: Shield, href: "/permissoes" });
+  }
 
   const handleSignOut = async () => {
     if (isLoggingOut) return;
