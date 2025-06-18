@@ -7,17 +7,18 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useFinanceOptimized } from "@/hooks/useFinanceOptimized";
-import { useSecureAuth } from "@/hooks/useSecureAuth";
+import { useFinancePermissions } from "@/hooks/useFinancePermissions";
 import { DateRangeSelector } from "@/components/finance/DateRangeSelector";
 import { OverviewTabContent } from "@/components/finance/OverviewTabContent";
 import { ServicesTabContent } from "@/components/finance/ServicesTabContent";
 import { CommissionsTabContent } from "@/components/finance/CommissionsTabContent";
-import { Loader2 } from "lucide-react";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { Loader2, AlertTriangle } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const FinancePageOptimized = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("today");
-  const { hasPermission } = useSecureAuth();
+  const { hasAccess, userRoles, reason, isLoading: permissionsLoading } = useFinancePermissions();
   
   // Get finance data using the optimized hook
   const { 
@@ -25,23 +26,59 @@ const FinancePageOptimized = () => {
     totalRevenue, 
     employeeCommissions, 
     chartData, 
-    isLoading 
+    isLoading: dataLoading 
   } = useFinanceOptimized(selectedPeriod);
 
-  if (!hasPermission('view_finance')) {
+  if (permissionsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Acesso Restrito</h1>
-          <p className="text-gray-600">
-            Você não tem permissão para visualizar dados financeiros.
-          </p>
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Verificando permissões...</span>
         </div>
       </div>
     );
   }
 
-  if (isLoading) {
+  if (!hasAccess) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-orange-500" />
+            <CardTitle>Acesso Restrito</CardTitle>
+            <CardDescription>
+              {reason}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                Suas permissões atuais:
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {userRoles.length > 0 ? (
+                  userRoles.map((role, index) => (
+                    <Badge key={index} variant="secondary">
+                      {role}
+                    </Badge>
+                  ))
+                ) : (
+                  <Badge variant="outline">Nenhum papel encontrado</Badge>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                Para acessar o módulo financeiro, você precisa ter o papel de 'admin' ou 'manager'.
+                Entre em contato com um administrador.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (dataLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex items-center gap-2">
@@ -59,46 +96,47 @@ const FinancePageOptimized = () => {
   }));
   
   return (
-    <ProtectedRoute requiredPermission="view_finance">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Financeiro</h2>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Financeiro</h2>
+        <div className="text-sm text-gray-500">
+          Acesso: {userRoles.join(', ')}
         </div>
-        
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-            <TabsTrigger value="services">Serviços</TabsTrigger>
-            <TabsTrigger value="commissions">Comissões</TabsTrigger>
-          </TabsList>
-          
-          <DateRangeSelector 
-            selectedPeriod={selectedPeriod}
-            setSelectedPeriod={setSelectedPeriod}
-          />
-          
-          <TabsContent value="overview">
-            <OverviewTabContent
-              completedAppointments={completedAppointments}
-              totalRevenue={totalRevenue}
-              employeeCommissions={employeeCommissions}
-              chartData={transformedChartData}
-            />
-          </TabsContent>
-          
-          <TabsContent value="services">
-            <ServicesTabContent completedAppointments={completedAppointments} />
-          </TabsContent>
-          
-          <TabsContent value="commissions">
-            <CommissionsTabContent
-              employeeCommissions={employeeCommissions}
-              completedAppointments={completedAppointments}
-            />
-          </TabsContent>
-        </Tabs>
       </div>
-    </ProtectedRoute>
+      
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="services">Serviços</TabsTrigger>
+          <TabsTrigger value="commissions">Comissões</TabsTrigger>
+        </TabsList>
+        
+        <DateRangeSelector 
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+        />
+        
+        <TabsContent value="overview">
+          <OverviewTabContent
+            completedAppointments={completedAppointments}
+            totalRevenue={totalRevenue}
+            employeeCommissions={employeeCommissions}
+            chartData={transformedChartData}
+          />
+        </TabsContent>
+        
+        <TabsContent value="services">
+          <ServicesTabContent completedAppointments={completedAppointments} />
+        </TabsContent>
+        
+        <TabsContent value="commissions">
+          <CommissionsTabContent
+            employeeCommissions={employeeCommissions}
+            completedAppointments={completedAppointments}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

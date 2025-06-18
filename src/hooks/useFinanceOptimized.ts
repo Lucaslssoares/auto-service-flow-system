@@ -52,8 +52,9 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
   const { data: financeData, isLoading } = useQuery({
     queryKey: ['finance_optimized', selectedPeriod, periodDates],
     queryFn: async (): Promise<FinanceData> => {
-      // Single optimized query for completed appointments with all related data
-      // Fixed the ambiguous relationship by specifying the exact foreign key
+      console.log('Buscando dados financeiros para o período:', selectedPeriod);
+
+      // Query otimizada para agendamentos completos com relacionamentos específicos
       const { data: appointments, error } = await supabase
         .from('appointments')
         .select(`
@@ -73,11 +74,13 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
         .order('date', { ascending: false });
 
       if (error) {
-        console.error('Erro ao buscar dados financeiros:', error);
+        console.error('Erro ao buscar agendamentos financeiros:', error);
         throw error;
       }
 
-      // Query for employee commissions in the same period
+      console.log('Agendamentos encontrados:', appointments?.length || 0);
+
+      // Query para comissões de funcionários no mesmo período
       const { data: commissions, error: commissionsError } = await supabase
         .from('employee_commissions')
         .select(`
@@ -92,13 +95,13 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
         console.error('Erro ao buscar comissões:', commissionsError);
       }
 
-      // Process appointments data
+      // Processar dados dos agendamentos
       const completedAppointments = (appointments || []).map(app => ({
         id: app.id,
-        customerName: app.customers?.name || '',
+        customerName: app.customers?.name || 'Cliente não encontrado',
         vehicleInfo: app.vehicles 
           ? `${app.vehicles.brand || ''} ${app.vehicles.model || ''} - ${app.vehicles.plate || ''}`.trim()
-          : '',
+          : 'Veículo não encontrado',
         services: app.appointment_services
           ?.map(as => as.services)
           .filter(Boolean)
@@ -108,13 +111,13 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
           })) || [],
         totalPrice: Number(app.total_price) || 0,
         date: new Date(app.date),
-        employeeName: app.employees?.name || ''
+        employeeName: app.employees?.name || 'Funcionário não encontrado'
       }));
 
-      // Calculate total revenue
+      // Calcular receita total
       const totalRevenue = completedAppointments.reduce((sum, app) => sum + app.totalPrice, 0);
 
-      // Process employee commissions
+      // Processar comissões de funcionários
       const employeeCommissionMap = new Map<string, {
         employeeName: string;
         totalCommission: number;
@@ -144,7 +147,7 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
         ...data
       }));
 
-      // Generate chart data (daily aggregation)
+      // Gerar dados do gráfico (agregação diária)
       const dailyData = new Map<string, { revenue: number; appointments: number }>();
       
       completedAppointments.forEach(app => {
@@ -168,6 +171,12 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
         }))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
+      console.log('Dados financeiros processados:', {
+        appointments: completedAppointments.length,
+        totalRevenue,
+        commissions: employeeCommissions.length
+      });
+
       return {
         completedAppointments,
         totalRevenue,
@@ -175,7 +184,7 @@ export const useFinanceOptimized = (selectedPeriod: string) => {
         chartData
       };
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutos
     retry: 2
   });
 
