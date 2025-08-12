@@ -9,15 +9,15 @@ import { ExecutionSettingsTab } from "@/components/settings/ExecutionSettingsTab
 import { FinancialSettingsTab } from "@/components/settings/FinancialSettingsTab";
 import { AdvancedSettingsTab } from "@/components/settings/AdvancedSettingsTab";
 import UserPermissionsDiagnostic from "@/components/permissions/UserPermissionsDiagnostic";
-import { useSecureAuth } from "@/hooks/useSecureAuth";
+import { useSettingsOptimized } from "@/hooks/useSettingsOptimized";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("general");
-  const { hasPermission } = useSecureAuth();
+  const { settings, loading, updateSetting, handleSave } = useSettingsOptimized();
 
   return (
     <div className="space-y-6">
-      <SettingsHeader />
+      <SettingsHeader onSave={handleSave} loading={loading} />
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-6">
@@ -30,24 +30,24 @@ const Settings = () => {
         </TabsList>
         
         <TabsContent value="general" className="space-y-6">
-          <GeneralSettingsTab />
+          <GeneralSettingsTab settings={settings} updateSetting={updateSetting} />
           <UserPermissionsDiagnostic />
         </TabsContent>
         
         <TabsContent value="notifications">
-          <NotificationsSettingsTab />
+          <NotificationsSettingsTab settings={settings} updateSetting={updateSetting} />
         </TabsContent>
         
         <TabsContent value="scheduling">
-          <SchedulingSettingsTab />
+          <SchedulingSettingsTab settings={settings} updateSetting={updateSetting} />
         </TabsContent>
         
         <TabsContent value="execution">
-          <ExecutionSettingsTab />
+          <ExecutionSettingsTab settings={settings} updateSetting={updateSetting} />
         </TabsContent>
         
         <TabsContent value="financial">
-          <FinancialSettingsTab />
+          <FinancialSettingsTab settings={settings} updateSetting={updateSetting} />
         </TabsContent>
         
         <TabsContent value="advanced">
