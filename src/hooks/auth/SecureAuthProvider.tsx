@@ -11,7 +11,7 @@ export const SecureAuthProvider = ({ children }: { children: React.ReactNode }) 
   const { user, session, isLoading: authLoading, refreshSession, signOut } = useAuthState();
   const { profile, isLoading: profileLoading } = useUserProfile(user);
   const { hasPermission } = usePermissions();
-  const { loading: rolesLoading } = useUserRoles();
+  const { loading: rolesLoading } = useUserRoles(user);
 
   // Combinação dos estados de loading
   const isLoading = authLoading || profileLoading || rolesLoading;

@@ -1,12 +1,11 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSecureAuth } from "@/hooks/useSecureAuth";
+import { User } from "@supabase/supabase-js";
 
 export type AppRole = "admin" | "manager" | "employee" | "user";
 
-export function useUserRoles() {
-  const { user } = useSecureAuth();
+export function useUserRoles(user: User | null = null) {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
