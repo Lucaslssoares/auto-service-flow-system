@@ -100,44 +100,46 @@ O **Lava Car SaaS** é uma solução completa e moderna para gestão de lava-jat
 
 ## 📦 Instalação e Configuração
 
-### Pré-requisitos
-- Node.js 18+ 
-- npm ou yarn
-- Conta no Supabase (para produção)
+### 🚀 Quick Start
 
-### 1. Clone o Repositório
+Para instruções detalhadas de configuração local, consulte **[LOCAL_SETUP.md](LOCAL_SETUP.md)**.
+
+#### Resumo Rápido
+
 ```bash
+# 1. Clone o repositório
 git clone https://github.com/seu-usuario/lava-car-saas.git
 cd lava-car-saas
-```
 
-### 2. Instale as Dependências
-```bash
+# 2. Instale as dependências
 npm install
-```
 
-### 3. Configuração do Ambiente
+# 3. Configure o ambiente (opcional - já vem pré-configurado)
+cp .env.example .env.local
 
-#### Desenvolvimento (Configuração Automática)
-O sistema está pré-configurado para desenvolvimento local.
-
-#### Produção
-Crie um arquivo `.env.production`:
-```env
-VITE_SUPABASE_URL=sua_url_do_supabase
-VITE_SUPABASE_ANON_KEY=sua_chave_anonima
-```
-
-### 4. Execute o Projeto
-```bash
-# Desenvolvimento
+# 4. Execute o projeto
 npm run dev
+```
 
-# Build para produção
-npm run build
+O projeto estará disponível em: **http://localhost:8080**
 
-# Preview da build
-npm run preview
+### 📚 Documentação Completa
+
+- **[LOCAL_SETUP.md](LOCAL_SETUP.md)** - Guia completo de configuração local
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Arquitetura técnica do sistema
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia para contribuidores
+
+### 🔑 Credenciais de Desenvolvimento
+
+O projeto já vem configurado com credenciais de desenvolvimento. Você pode começar a usar imediatamente ou configurar seu próprio projeto Supabase seguindo o guia em [LOCAL_SETUP.md](LOCAL_SETUP.md).
+
+### ⚙️ Comandos Disponíveis
+
+```bash
+npm run dev      # Servidor de desenvolvimento (localhost:8080)
+npm run build    # Build de produção
+npm run preview  # Preview da build
+npm run lint     # Verificar código
 ```
 
 ## 🗄️ Estrutura do Banco de Dados
