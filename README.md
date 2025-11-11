@@ -237,13 +237,6 @@ src/
 - **Excel** - Dados para análise
 - **CSV** - Integração com outros sistemas
 
-## 🚀 Deploy e Produção
-
-### Plataformas Recomendadas
-- **Vercel** - Deploy automático
-- **Netlify** - Hospedagem estática
-- **AWS S3 + CloudFront** - Escalabilidade
-- **Digital Ocean** - Controle total
 
 ### Configuração de Domínio
 1. Configure DNS para sua aplicação
@@ -258,7 +251,6 @@ src/
 - [ ] **API Pública** - Integrações externas
 - [ ] **Mobile App** - Aplicativo nativo
 - [ ] **Marketplace** - Loja de add-ons
-- [ ] **Inteligência Artificial** - Recomendações
 - [ ] **Integração Fiscal** - NFe automática
 
 ### Melhorias Planejadas
@@ -283,28 +275,9 @@ src/
 - Documente mudanças importantes
 - Mantenha compatibilidade com versões anteriores
 
-## 📞 Suporte e Contato
 
-### Canais de Suporte
-- **📧 Email**: suporte@lavacar-saas.com.br
-- **💬 Discord**: [Comunidade Lava Car SaaS]
-- **📖 Documentação**: [docs.lavacar-saas.com.br]
-- **🐛 Issues**: [GitHub Issues]
-
-### Desenvolvimento
-- **👨‍💻 Desenvolvedor**: Lucas Solares
+- **👨‍💻 Desenvolvedor**: Lucas Soares
 - **📧 Contato**: solareslucas403@gmail.com
-- **🌐 LinkedIn**: [linkedin.com/in/lucassolares]
-
-## 📄 Licença
-
-Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
----
-
-<div align="center">
-
-**🚗 Desenvolvido para revolucionar a gestão de lava-jatos**
 
 [⭐ Star no GitHub](https://github.com/seu-usuario/lava-car-saas) • [🚀 Demo Online](https://lavacar-saas.vercel.app) • [📖 Documentação](https://docs.lavacar-saas.com.br)
 
