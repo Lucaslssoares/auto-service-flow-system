@@ -46,29 +46,10 @@ export function useSignup() {
       }
 
       if (data.user) {
-        const { user } = data;
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .insert([
-            {
-              user_id: user.id,
-              role: "user",
-            },
-          ]);
-
-        if (roleError) {
-          toast({
-            title: "Cadastrado (mas houve erro ao registrar papel)!",
-            description: roleError.message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Cadastro realizado com sucesso!",
-            description: "Você foi logado automaticamente",
-          });
-        }
-
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: "Você foi logado automaticamente",
+        });
         navigate("/");
         return;
       }
