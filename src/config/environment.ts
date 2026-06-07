@@ -1,9 +1,4 @@
 
-/**
- * Configurações de ambiente da aplicação
- * Gerencia variáveis de ambiente de forma segura e tipada
- */
-
 interface EnvironmentConfig {
   supabase: {
     url: string;
@@ -16,43 +11,23 @@ interface EnvironmentConfig {
   };
 }
 
-/**
- * Configuração para desenvolvimento
- * Em produção, essas variáveis devem ser definidas via environment variables
- */
-const developmentConfig: EnvironmentConfig = {
-  supabase: {
-    url: "https://ppztpzbgbijpxcwgelcg.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwenRwemJnYmlqcHhjd2dlbGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5NjExNjEsImV4cCI6MjA2MzUzNzE2MX0.kh8wbyiceqsZa36CcgFVldd-Mn-ZkDcpmALDO7v8Kis"
-  },
+const url = import.meta.env.VITE_SUPABASE_URL;
+const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!url || !anonKey) {
+  throw new Error(
+    'Variáveis de ambiente VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY são obrigatórias. ' +
+    'Copie .env.example para .env e preencha com suas credenciais Supabase.'
+  );
+}
+
+export const config: EnvironmentConfig = {
+  supabase: { url, anonKey },
   app: {
-    name: "Lava Car System",
-    version: "1.0.0",
-    environment: "development"
-  }
+    name: 'Lava Car System',
+    version: '1.0.0',
+    environment: import.meta.env.PROD ? 'production' : 'development',
+  },
 };
 
-/**
- * Obtém a configuração baseada no ambiente
- * Prioriza variáveis de ambiente quando disponíveis
- */
-export const getEnvironmentConfig = (): EnvironmentConfig => {
-  // Em produção, usar variáveis de ambiente
-  if (import.meta.env.PROD) {
-    return {
-      supabase: {
-        url: import.meta.env.VITE_SUPABASE_URL || developmentConfig.supabase.url,
-        anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || developmentConfig.supabase.anonKey,
-      },
-      app: {
-        name: developmentConfig.app.name,
-        version: developmentConfig.app.version,
-        environment: "production"
-      }
-    };
-  }
-
-  return developmentConfig;
-};
-
-export const config = getEnvironmentConfig();
+export const getEnvironmentConfig = () => config;

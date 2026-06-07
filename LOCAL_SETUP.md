@@ -27,15 +27,21 @@ O `.env` já está configurado apontando para o projeto Supabase de produção. 
 
 ## Variáveis de ambiente
 
-O arquivo `.env` na raiz já contém:
+Copie o arquivo de exemplo e preencha com suas credenciais Supabase:
 
-```env
-VITE_SUPABASE_PROJECT_ID="bciuykfoinbgkrsiljpg"
-VITE_SUPABASE_URL="https://bciuykfoinbgkrsiljpg.supabase.co"
-VITE_SUPABASE_PUBLISHABLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjaXV5a2ZvaW5iZ2tyc2lsanBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3ODcwNzAsImV4cCI6MjA5NjM2MzA3MH0.YWEYLkhxkPRmw35rT4FvRB2gSS7vi7Qyq_LjaQMKFhM"
+```bash
+cp .env.example .env
 ```
 
-> A anon key é segura para commitar — ela não dá acesso admin. O controle de acesso é feito por RLS no banco.
+Edite o `.env` com os valores do seu projeto (Settings > API no Supabase Dashboard):
+
+```env
+VITE_SUPABASE_PROJECT_ID="seu-projeto-id"
+VITE_SUPABASE_URL="https://seu-projeto-id.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY="sua-anon-key"
+```
+
+> O arquivo `.env` está no `.gitignore` — nunca suba credenciais reais para o repositório.
 
 ---
 
