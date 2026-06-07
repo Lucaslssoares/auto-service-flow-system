@@ -502,6 +502,130 @@ export type Database = {
           },
         ]
       }
+      appointment_status_history: {
+        Row: {
+          id: string
+          appointment_id: string
+          from_status: string | null
+          to_status: string
+          changed_by: string | null
+          notes: string | null
+          changed_at: string
+        }
+        Insert: {
+          id?: string
+          appointment_id: string
+          from_status?: string | null
+          to_status: string
+          changed_by?: string | null
+          notes?: string | null
+          changed_at?: string
+        }
+        Update: {
+          id?: string
+          appointment_id?: string
+          from_status?: string | null
+          to_status?: string
+          changed_by?: string | null
+          notes?: string | null
+          changed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_status_history_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cash_registers: {
+        Row: {
+          id: string
+          user_id: string
+          status: string
+          opening_amount: number
+          closing_amount_expected: number | null
+          closing_amount_actual: number | null
+          difference: number | null
+          notes: string | null
+          opened_at: string
+          closed_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          status?: string
+          opening_amount?: number
+          closing_amount_expected?: number | null
+          closing_amount_actual?: number | null
+          difference?: number | null
+          notes?: string | null
+          opened_at?: string
+          closed_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          status?: string
+          opening_amount?: number
+          closing_amount_expected?: number | null
+          closing_amount_actual?: number | null
+          difference?: number | null
+          notes?: string | null
+          opened_at?: string
+          closed_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      cash_movements: {
+        Row: {
+          id: string
+          cash_register_id: string
+          user_id: string
+          type: string
+          amount: number
+          payment_method: string | null
+          appointment_id: string | null
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          cash_register_id: string
+          user_id: string
+          type: string
+          amount: number
+          payment_method?: string | null
+          appointment_id?: string | null
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          cash_register_id?: string
+          user_id?: string
+          type?: string
+          amount?: number
+          payment_method?: string | null
+          appointment_id?: string | null
+          description?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_movements_cash_register_id_fkey"
+            columns: ["cash_register_id"]
+            isOneToOne: false
+            referencedRelation: "cash_registers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       employee_commission_summary: {

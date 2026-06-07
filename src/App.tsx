@@ -23,6 +23,7 @@ import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import ClientAppointment from "./pages/ClientAppointment";
 import UserPermissions from "./pages/UserPermissions";
+import CashRegisterPage from "./pages/CashRegister";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { SecureAuthProvider } from "./hooks/useSecureAuth";
 import { getSecurityHeaders } from "./utils/security";
@@ -90,6 +91,7 @@ const App = () => (
                 <Route path="/funcionarios" element={<Employees />} />
                 <Route path="/agendamentos" element={<Appointments />} />
                 <Route path="/execucao" element={<ExecutionPage />} />
+                <Route path="/caixa" element={<CashRegisterPage />} />
                 <Route path="/financeiro" element={<FinancePageOptimized />} />
                 <Route path="/configuracoes" element={<Settings />} />
                 <Route path="/permissoes" element={

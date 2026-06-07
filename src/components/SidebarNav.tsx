@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   BarChart2, Users, Car, Settings, Calendar, Clipboard,
-  DollarSign, LogOut, Cog, Shield
+  DollarSign, LogOut, Cog, Shield, Wallet
 } from "lucide-react";
 import { useSecureAuth } from "@/hooks/useSecureAuth";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ export function SidebarNav({ isOpen, setIsOpen }: SidebarNavProps) {
     { title: "Funcionários", icon: Users, href: "/funcionarios" },
     { title: "Agendamentos", icon: Calendar, href: "/agendamentos" },
     { title: "Execução", icon: Clipboard, href: "/execucao" },
+    { title: "Caixa", icon: Wallet, href: "/caixa" },
     { title: "Financeiro", icon: DollarSign, href: "/financeiro" },
     { title: "Configurações", icon: Cog, href: "/configuracoes" },
   ];
