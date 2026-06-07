@@ -1,5 +1,4 @@
-# Environment variables — never commit real secrets
-.env
+# .env.local e .env.*.local podem conter service_role key — nunca commitar
 .env.local
 .env.*.local
 
