@@ -502,6 +502,33 @@ export type Database = {
           },
         ]
       }
+      business_config: {
+        Row: {
+          id: number
+          max_per_slot: number
+          slot_duration_minutes: number
+          working_start: string
+          working_end: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          max_per_slot?: number
+          slot_duration_minutes?: number
+          working_start?: string
+          working_end?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          max_per_slot?: number
+          slot_duration_minutes?: number
+          working_start?: string
+          working_end?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appointment_status_history: {
         Row: {
           id: string

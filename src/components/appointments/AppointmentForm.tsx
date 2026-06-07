@@ -11,6 +11,7 @@ import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Plus, X } from 'lucide-react';
+import { SlotPicker } from './SlotPicker';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -53,6 +54,7 @@ export const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
   });
 
   const selectedCustomerId = form.watch('customerId');
+  const selectedDate = form.watch('date');
   const customerVehicles = vehicles.filter(vehicle => vehicle.customerId === selectedCustomerId);
 
   const onSubmit = (data: AppointmentFormData) => {
@@ -93,15 +95,6 @@ export const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
       .filter(service => selectedServices.includes(service.id))
       .reduce((sum, service) => sum + service.price, 0);
   };
-
-  // Generate time slots from 7:00 to 18:00
-  const timeSlots = [];
-  for (let hour = 7; hour <= 18; hour++) {
-    timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
-    if (hour < 18) {
-      timeSlots.push(`${hour.toString().padStart(2, '0')}:30`);
-    }
-  }
 
   return (
     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -235,20 +228,13 @@ export const AppointmentForm = ({ onClose }: AppointmentFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Horário</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um horário" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {timeSlots.map((time) => (
-                        <SelectItem key={time} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <SlotPicker
+                      date={selectedDate}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
