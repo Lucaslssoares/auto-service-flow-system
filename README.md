@@ -1,286 +1,154 @@
+# Lava Car — Sistema de Gestão
 
-# 🚗 Lava Car SaaS - Sistema de Gestão Completo
+Sistema de gestão operacional para lava-rápidos. SPA React com backend Supabase (PostgreSQL + Auth + RLS).
 
-> **Sistema profissional de gestão para lava-jatos desenvolvido como SaaS moderno**
+**Repositório:** https://github.com/Lucaslssoares/auto-service-flow-system  
+**Projeto Supabase:** `bciuykfoinbgkrsiljpg`  
+**Última atualização:** 2026-06-07
 
-[![React](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Backend-green.svg)](https://supabase.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-blue.svg)](https://tailwindcss.com/)
+---
 
-## 🎯 Visão Geral
+## Stack
 
-O **Lava Car SaaS** é uma solução completa e moderna para gestão de lava-jatos, desenvolvida para ser escalável, segura e fácil de usar. O sistema oferece todas as funcionalidades necessárias para operar um negócio de lava-car de forma profissional e eficiente.
+| Camada | Tecnologia |
+|---|---|
+| Frontend | React 18 + Vite + TypeScript |
+| UI | shadcn/ui + Tailwind CSS + Radix UI |
+| Estado servidor | TanStack Query v5 |
+| Formulários | React Hook Form + Zod |
+| Backend | Supabase (PostgreSQL 17 + Auth) |
+| Auth | Supabase Auth — email/senha |
+| RLS | Row Level Security em todas as tabelas |
+| Gráficos | Recharts |
+| Datas | date-fns (pt-BR) |
 
-### 🌟 Principais Diferenciais
+---
 
-- **📱 Totalmente Responsivo**: Interface otimizada para desktop, tablet e mobile
-- **🔒 Segurança Empresarial**: Autenticação robusta e políticas de segurança (RLS)
-- **⚡ Performance Otimizada**: Carregamento rápido e experiência fluida
-- **🎨 Interface Moderna**: Design limpo e intuitivo baseado em Shadcn/UI
-- **📊 Analytics Integrado**: Relatórios financeiros e operacionais em tempo real
-- **🔧 Altamente Configurável**: Adaptável a diferentes tipos de negócio
+## Módulos implementados
 
-## 🚀 Funcionalidades Principais
+### Agendamentos `/agendamentos`
+- Fluxo de status: `pending → confirmed → arrived → in-progress → completed / cancelled`
+- Abas por status: Ativos, Aguardando, Confirmados, Presentes, Em Execução, Histórico
+- Log automático de todas as transições de status (`appointment_status_history`)
+- Agendamento público para clientes sem login (`/agendar`)
+- Controle de disponibilidade por slot com vagas configuráveis
 
-### 👥 Gestão de Clientes
-- ✅ Cadastro completo com CPF, telefone e email
-- ✅ Histórico de serviços por cliente
-- ✅ Busca avançada e filtros inteligentes
-- ✅ Validação automática de dados
+### Clientes `/clientes`
+- CRUD completo (nome, CPF, telefone, email)
+- Busca por nome/email/CPF
+- Relacionamento 1:N com veículos
 
-### 🚙 Controle de Veículos
-- ✅ Cadastro detalhado por cliente
-- ✅ Suporte a diferentes tipos de veículos
-- ✅ Histórico de manutenções
-- ✅ Fotos e observações
+### Veículos `/veiculos`
+- CRUD por cliente (placa única, marca, modelo, cor, tipo, ano)
+- Filtro por cliente
 
-### 🛠️ Catálogo de Serviços
-- ✅ Gestão completa de preços e duração
-- ✅ Configuração de comissões por serviço
-- ✅ Categorização e descrições detalhadas
-- ✅ Controle de margem de lucro
+### Serviços `/servicos`
+- CRUD (nome, descrição, preço, duração, % comissão)
+- Preço e comissão usados nos cálculos automáticos de agendamento
 
-### 👨‍💼 Gestão de Equipe
-- ✅ Cadastro de funcionários com cargos
-- ✅ Controle de comissões (fixa, percentual, mista)
-- ✅ Relatórios de produtividade
-- ✅ Gestão de horários e escalas
+### Funcionários `/funcionarios`
+- CRUD (nome, cargo, CPF, telefone, email, salário, tipo de comissão)
+- Tipos de comissão: fixa, percentual, mista
 
-### 📅 Sistema de Agendamentos
-- ✅ Calendário interativo e intuitivo
-- ✅ Agendamento público para clientes
-- ✅ Gestão de status em tempo real
-- ✅ Notificações automáticas
+### Execução `/execucao`
+- Kanban de serviços em andamento e próximos
+- Suporte a múltiplos funcionários por serviço
+- Divisão de lucros configurável por equipe
+- Rastreamento de horário de início e fim
 
-### ⚙️ Execução de Serviços
-- ✅ Trabalho em equipe com divisão de lucros
-- ✅ Múltiplos funcionários por serviço
-- ✅ Controle de tempo e produtividade
-- ✅ Distribuição automática de comissões
+### Caixa `/caixa`
+- Abertura de turno com fundo inicial
+- Movimentações: pagamento, sangria, suprimento
+- Formas de pagamento: dinheiro, crédito, débito, PIX
+- Fechamento com saldo esperado vs. real e diferença calculada
 
-### 💰 Gestão Financeira
-- ✅ Relatórios de receita e despesas
-- ✅ Análise de performance por funcionário
-- ✅ Controle de comissões e pagamentos
-- ✅ Gráficos e dashboards interativos
-- ✅ Exportação de relatórios
+### Financeiro `/financeiro`
+- Períodos: hoje, semana, mês, trimestre
+- Receita total, ticket médio, quantidade de serviços
+- Ranking de serviços mais vendidos
+- Ranking de funcionários por receita
+- Comissões por período
+- Restrito a roles: `admin`, `manager`
 
-### ⚙️ Configurações Avançadas
-- ✅ Personalização completa do sistema
-- ✅ Horários de funcionamento flexíveis
-- ✅ Configurações de agendamento
-- ✅ Preferências de notificação
+### Dashboard `/`
+- Cards: agendamentos hoje, clientes, veículos, serviços, receita mensal
+- Próximos agendamentos e atividade recente
 
-## 🛠️ Tecnologias Utilizadas
+### Configurações `/configuracoes`
+- Capacidade de slots (vagas por horário, duração, horário de funcionamento) — **persiste no Supabase** (`business_config`)
+- Demais configurações (nome empresa, notificações, etc.) — **ainda em estado local, não persiste**
 
-### Frontend
-- **React 18.3.1** - Framework principal
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool otimizado
-- **Tailwind CSS** - Estilização utilitária
-- **Shadcn/UI** - Componentes modernos
-- **Radix UI** - Componentes acessíveis
+### Permissões `/permissoes`
+- RBAC com roles: `admin`, `manager`, `employee`, `user`
+- Gerenciamento de roles por usuário (somente admin)
 
-### Backend & Infraestrutura
-- **Supabase** - Backend completo
-  - Autenticação e autorização
-  - Banco PostgreSQL
-  - Row Level Security (RLS)
-  - Edge Functions
-  - Storage de arquivos
+### Auth `/auth`
+- Cadastro e login por email/senha
+- Auto-confirm habilitado (sem e-mail de verificação)
+- Trigger `handle_new_user` cria perfil e roles automaticamente
+- Admins pré-definidos: `solareslucas403@gmail.com`, `solareslucas403@gmail.com`
 
-### Bibliotecas Auxiliares
-- **TanStack Query** - Gerenciamento de estado servidor
-- **React Hook Form** - Formulários otimizados
-- **Zod** - Validação de schemas
-- **Date-fns** - Manipulação de datas
-- **Recharts** - Gráficos e visualizações
-- **Lucide React** - Ícones modernos
+---
 
-## 📦 Instalação e Configuração
+## Funcionalidades pendentes (roadmap completo em [ROADMAP.md](ROADMAP.md))
 
-### 🚀 Quick Start
+| Funcionalidade | Prioridade |
+|---|---|
+| Persistir todas as configurações no Supabase | Alta |
+| Exportação PDF/Excel de relatórios financeiros | Alta |
+| Histórico completo do cliente (total gasto, frequência) | Alta |
+| Programa de fidelidade (pontos por serviço) | Média |
+| Planos de assinatura mensal | Média |
+| WhatsApp — confirmação e lembrete automático | Média |
+| Dashboard: heatmap de pico, taxa de ocupação | Média |
+| NPS pós-serviço | Baixa |
+| QR Code check-in | Baixa |
 
-Para instruções detalhadas de configuração local, consulte **[LOCAL_SETUP.md](LOCAL_SETUP.md)**.
+---
 
-#### Resumo Rápido
+## Setup local
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/lava-car-saas.git
-cd lava-car-saas
+# 1. Clone
+git clone https://github.com/Lucaslssoares/auto-service-flow-system.git
+cd auto-service-flow-system
 
-# 2. Instale as dependências
+# 2. Instale dependências
 npm install
 
-# 3. Configure o ambiente (opcional - já vem pré-configurado)
-cp .env.example .env.local
+# 3. Variáveis de ambiente (já configurado no .env)
+# VITE_SUPABASE_URL=https://bciuykfoinbgkrsiljpg.supabase.co
+# VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
 
-# 4. Execute o projeto
-npm run dev
+# 4. Rode
+npm run dev   # http://localhost:8080
 ```
 
-O projeto estará disponível em: **http://localhost:8080**
+Instruções detalhadas em [LOCAL_SETUP.md](LOCAL_SETUP.md).
 
-### 📚 Documentação Completa
+---
 
-- **[LOCAL_SETUP.md](LOCAL_SETUP.md)** - Guia completo de configuração local
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Arquitetura técnica do sistema
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia para contribuidores
-
-### 🔑 Credenciais de Desenvolvimento
-
-O projeto já vem configurado com credenciais de desenvolvimento. Você pode começar a usar imediatamente ou configurar seu próprio projeto Supabase seguindo o guia em [LOCAL_SETUP.md](LOCAL_SETUP.md).
-
-### ⚙️ Comandos Disponíveis
+## Comandos
 
 ```bash
-npm run dev      # Servidor de desenvolvimento (localhost:8080)
+npm run dev      # Desenvolvimento (porta 8080)
 npm run build    # Build de produção
 npm run preview  # Preview da build
-npm run lint     # Verificar código
+npm run lint     # ESLint
 ```
 
-## 🗄️ Estrutura do Banco de Dados
+---
 
-### Tabelas Principais
-- **profiles** - Perfis de usuários autenticados
-- **customers** - Dados dos clientes
-- **vehicles** - Veículos cadastrados
-- **services** - Catálogo de serviços
-- **employees** - Funcionários da empresa
-- **appointments** - Agendamentos de serviços
-- **service_executions** - Execução de serviços
-- **payment_transactions** - Transações financeiras
-- **employee_commissions** - Comissões dos funcionários
+## Documentação
 
-### Funcionalidades do Banco
-- **Row Level Security (RLS)** em todas as tabelas
-- **Triggers automáticos** para auditoria
-- **Views otimizadas** para relatórios
-- **Funções customizadas** para cálculos
+| Arquivo | Conteúdo |
+|---|---|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitetura técnica, estrutura de pastas, padrões |
+| [DATABASE.md](DATABASE.md) | Schema completo do banco, tabelas, funções, RLS |
+| [LOCAL_SETUP.md](LOCAL_SETUP.md) | Setup detalhado, troubleshooting |
+| [ROADMAP.md](ROADMAP.md) | Análise de mercado, backlog priorizado |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Guia de contribuição e padrões de código |
 
-## 🔐 Segurança e Compliance
+---
 
-### Medidas de Segurança
-- ✅ Autenticação JWT robusta
-- ✅ Row Level Security (RLS) 
-- ✅ Validação de entrada rigorosa
-- ✅ Sanitização de dados
-- ✅ Logs de auditoria completos
-
-### Proteção de Dados
-- ✅ Criptografia em trânsito e repouso
-- ✅ Backup automático diário
-- ✅ Políticas de retenção de dados
-- ✅ Compliance com LGPD
-
-## 📱 Responsividade
-
-O sistema é otimizado para todos os dispositivos:
-
-- **📱 Mobile** (320px+) - Interface touch-friendly
-- **📱 Tablet** (768px+) - Layout adaptado
-- **💻 Desktop** (1024px+) - Experiência completa
-- **🖥️ Ultra-wide** (1440px+) - Máximo aproveitamento
-
-## 🚀 Performance
-
-### Otimizações Implementadas
-- ✅ Code splitting automático
-- ✅ Lazy loading de componentes
-- ✅ Cache inteligente de dados
-- ✅ Minificação avançada
-- ✅ Tree shaking otimizado
-- ✅ Service Workers (PWA ready)
-
-### Métricas de Performance
-- **First Contentful Paint**: < 1.5s
-- **Largest Contentful Paint**: < 2.5s
-- **Time to Interactive**: < 3.5s
-- **Cumulative Layout Shift**: < 0.1
-
-## 🔧 Desenvolvimento
-
-### Estrutura de Pastas
-```
-src/
-├── components/          # Componentes reutilizáveis
-│   ├── ui/             # Componentes base (Shadcn)
-│   ├── forms/          # Formulários específicos
-│   └── layouts/        # Layouts de página
-├── hooks/              # Hooks customizados
-├── pages/              # Páginas da aplicação
-├── types/              # Definições TypeScript
-├── utils/              # Utilitários e helpers
-├── integrations/       # Integrações externas
-└── config/            # Configurações
-```
-
-### Padrões de Código
-- **TypeScript Strict** - Tipagem rigorosa
-- **ESLint + Prettier** - Formatação consistente
-- **Conventional Commits** - Mensagens padronizadas
-- **Hooks Pattern** - Lógica reutilizável
-- **Error Boundaries** - Tratamento robusto de erros
-
-## 📊 Relatórios e Analytics
-
-### Dashboards Disponíveis
-- **📈 Receita Diária/Mensal** - Gráficos de tendência
-- **👥 Performance por Funcionário** - Rankings e métricas
-- **🛠️ Serviços Mais Vendidos** - Análise de popularidade
-- **💰 Comissões e Pagamentos** - Controle financeiro
-- **📅 Taxa de Ocupação** - Otimização de agenda
-
-### Exportação
-- **PDF** - Relatórios formatados
-- **Excel** - Dados para análise
-- **CSV** - Integração com outros sistemas
-
-
-### Configuração de Domínio
-1. Configure DNS para sua aplicação
-2. Ative HTTPS com certificado SSL
-3. Configure redirects e headers de segurança
-4. Monitore performance e uptime
-
-## 🎯 Roadmap SaaS
-
-### Próximas Funcionalidades
-- [ ] **Multi-tenancy** - Múltiplas empresas
-- [ ] **API Pública** - Integrações externas
-- [ ] **Mobile App** - Aplicativo nativo
-- [ ] **Marketplace** - Loja de add-ons
-- [ ] **Integração Fiscal** - NFe automática
-
-### Melhorias Planejadas
-- [ ] **PWA Completo** - App instalável
-- [ ] **Notificações Push** - Engagement
-- [ ] **Chat em Tempo Real** - Suporte integrado
-- [ ] **Automação de Marketing** - Email campaigns
-- [ ] **Análise Preditiva** - Insights avançados
-
-## 🤝 Contribuindo
-
-### Como Contribuir
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
-
-### Diretrizes
-- Siga os padrões de código estabelecidos
-- Adicione testes para novas funcionalidades
-- Documente mudanças importantes
-- Mantenha compatibilidade com versões anteriores
-
-
-- **👨‍💻 Desenvolvedor**: Lucas Soares
-- **📧 Contato**: solareslucas403@gmail.com
-
-[⭐ Star no GitHub](https://github.com/seu-usuario/lava-car-saas) • [🚀 Demo Online](https://lavacar-saas.vercel.app) • [📖 Documentação](https://docs.lavacar-saas.com.br)
-
-</div>
+**Desenvolvedor:** Lucas Soares — solareslucas403@gmail.com

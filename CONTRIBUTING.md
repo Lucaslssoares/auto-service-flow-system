@@ -1,307 +1,151 @@
-# 🤝 Guia de Contribuição
+# Guia de Contribuição
 
-Obrigado por considerar contribuir com o Lava Car SaaS! Este documento fornece diretrizes para contribuir com o projeto.
-
-## 📋 Índice
-
-- [Como Posso Contribuir?](#como-posso-contribuir)
-- [Configuração do Ambiente](#configuração-do-ambiente)
-- [Processo de Desenvolvimento](#processo-de-desenvolvimento)
-- [Padrões de Código](#padrões-de-código)
-- [Commit Guidelines](#commit-guidelines)
-- [Pull Request Process](#pull-request-process)
-
-## 🎯 Como Posso Contribuir?
-
-### Reportar Bugs
-
-Antes de criar um bug report, verifique se o problema já não foi reportado. Se você encontrar um bug:
-
-1. Use o template de issue para bugs
-2. Inclua uma descrição clara do problema
-3. Adicione passos para reproduzir
-4. Inclua screenshots se relevante
-5. Especifique ambiente (navegador, OS, etc.)
-
-### Sugerir Melhorias
-
-Sugestões de melhorias são sempre bem-vindas! Ao sugerir:
-
-1. Use o template de feature request
-2. Explique por que a funcionalidade seria útil
-3. Forneça exemplos de uso
-4. Se possível, sugira uma implementação
-
-### Contribuir com Código
-
-1. Faça fork do repositório
-2. Crie uma branch para sua feature
-3. Desenvolva seguindo os padrões
-4. Adicione testes se aplicável
-5. Submeta um Pull Request
-
-## 🔧 Configuração do Ambiente
-
-Siga as instruções em [LOCAL_SETUP.md](LOCAL_SETUP.md) para configurar seu ambiente de desenvolvimento.
-
-## 💻 Processo de Desenvolvimento
-
-### 1. Fork e Clone
-
-```bash
-# Fork via GitHub interface
-# Depois clone seu fork
-git clone https://github.com/SEU-USUARIO/lava-car-saas.git
-cd lava-car-saas
-```
-
-### 2. Configurar Upstream
-
-```bash
-git remote add upstream https://github.com/ORIGINAL-OWNER/lava-car-saas.git
-git fetch upstream
-```
-
-### 3. Criar Branch
-
-```bash
-# Para features
-git checkout -b feature/nome-da-feature
-
-# Para bugs
-git checkout -b fix/nome-do-bug
-
-# Para documentação
-git checkout -b docs/nome-da-doc
-```
-
-### 4. Desenvolver
-
-```bash
-npm run dev  # Inicia servidor de desenvolvimento
-```
-
-### 5. Testar
-
-```bash
-npm run build  # Verifica se build funciona
-npm run lint   # Verifica código
-```
-
-## 📝 Padrões de Código
-
-### TypeScript
-
-```typescript
-// ✅ Bom - Interfaces explícitas
-interface UserProps {
-  id: string;
-  name: string;
-  email: string;
-}
-
-export function UserCard({ id, name, email }: UserProps) {
-  // ...
-}
-
-// ❌ Evitar - Tipos implícitos
-export function UserCard({ id, name, email }) {
-  // ...
-}
-```
-
-### React Components
-
-```typescript
-// ✅ Bom - Componentes funcionais com TypeScript
-export function Button({ 
-  label, 
-  onClick, 
-  disabled = false 
-}: ButtonProps) {
-  return (
-    <button 
-      onClick={onClick} 
-      disabled={disabled}
-      className="btn"
-    >
-      {label}
-    </button>
-  );
-}
-
-// ❌ Evitar - Class components (sem necessidade)
-export class Button extends React.Component {
-  // ...
-}
-```
-
-### Hooks
-
-```typescript
-// ✅ Bom - Hooks customizados com tipagem
-export function useCustomers(): UseCustomersReturn {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  // ...
-  return { customers, isLoading, error };
-}
-
-// ❌ Evitar - Sem tipagem de retorno
-export function useCustomers() {
-  // ...
-}
-```
-
-### Estilização
-
-```typescript
-// ✅ Bom - Usar classes do Tailwind
-<div className="flex items-center justify-between p-4 bg-background">
-
-// ❌ Evitar - Estilos inline (exceto dinâmicos)
-<div style={{ display: 'flex', padding: '16px' }}>
-```
-
-### Nomenclatura
-
-- **Componentes**: PascalCase (`UserCard.tsx`)
-- **Hooks**: camelCase com prefixo "use" (`useCustomers.ts`)
-- **Utilitários**: camelCase (`formatDate.ts`)
-- **Constantes**: UPPER_SNAKE_CASE (`MAX_ITEMS`)
-- **Tipos/Interfaces**: PascalCase (`UserProps`)
-
-## 🔖 Commit Guidelines
-
-Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/).
-
-### Formato
-
-```
-<tipo>(<escopo>): <descrição>
-
-[corpo opcional]
-
-[rodapé opcional]
-```
-
-### Tipos
-
-- **feat**: Nova funcionalidade
-- **fix**: Correção de bug
-- **docs**: Documentação
-- **style**: Formatação (não muda código)
-- **refactor**: Refatoração
-- **test**: Testes
-- **chore**: Manutenção
-
-### Exemplos
-
-```bash
-# Feature
-git commit -m "feat(appointments): adiciona filtro por status"
-
-# Bug fix
-git commit -m "fix(auth): corrige erro de logout"
-
-# Documentação
-git commit -m "docs: atualiza guia de instalação"
-
-# Refatoração
-git commit -m "refactor(hooks): otimiza useCustomers"
-```
-
-## 🔄 Pull Request Process
-
-### 1. Antes de Submeter
-
-- [ ] Código segue os padrões do projeto
-- [ ] Build está funcionando (`npm run build`)
-- [ ] Sem erros de lint (`npm run lint`)
-- [ ] Commits seguem o padrão Conventional Commits
-- [ ] Documentação atualizada se necessário
-- [ ] Branch atualizada com `main`
-
-### 2. Criar Pull Request
-
-1. Push para seu fork
-2. Vá para o repositório original no GitHub
-3. Clique em "New Pull Request"
-4. Selecione sua branch
-5. Preencha o template de PR
-6. Aguarde review
-
-### 3. Template de PR
-
-```markdown
-## Descrição
-Breve descrição das mudanças
-
-## Tipo de Mudança
-- [ ] Bug fix
-- [ ] Nova feature
-- [ ] Breaking change
-- [ ] Documentação
-
-## Como Testar
-Passos para testar as mudanças
-
-## Screenshots (se aplicável)
-Adicione screenshots
-
-## Checklist
-- [ ] Código segue os padrões
-- [ ] Build funciona
-- [ ] Sem erros de lint
-- [ ] Documentação atualizada
-```
-
-### 4. Code Review
-
-- Responda aos comentários prontamente
-- Faça as alterações solicitadas
-- Push das alterações para a mesma branch
-- Aguarde aprovação
-
-### 5. Merge
-
-Após aprovação, o maintainer fará o merge.
-
-## 🎨 Design System
-
-Ao adicionar componentes UI:
-
-1. Use componentes do Shadcn/UI quando possível
-2. Siga o design system em `index.css`
-3. Use variáveis CSS para cores
-4. Mantenha consistência visual
-
-```typescript
-// ✅ Bom - Usa design system
-<Button variant="primary" size="lg">
-
-// ❌ Evitar - Estilos customizados
-<Button className="bg-blue-500 px-8">
-```
-
-## 🔐 Segurança
-
-- NUNCA commite credenciais ou secrets
-- NUNCA commite arquivos `.env`
-- Use `.env.example` como referência
-- Reporte vulnerabilidades em privado
-
-## 📞 Comunicação
-
-- **Issues**: Para bugs e features
-- **Pull Requests**: Para contribuições de código
-- **Email**: solareslucas403@gmail.com
-
-## 🙏 Reconhecimento
-
-Todos os contribuidores serão adicionados ao README do projeto.
+Última atualização: 2026-06-07
 
 ---
 
-**Obrigado por contribuir! 🚀**
+## Setup
 
-Sua ajuda torna o Lava Car SaaS cada vez melhor!
+```bash
+git clone https://github.com/Lucaslssoares/auto-service-flow-system.git
+cd auto-service-flow-system
+npm install
+npm run dev
+```
+
+---
+
+## Padrões de código
+
+### Nomenclatura
+
+| Tipo | Padrão | Exemplo |
+|---|---|---|
+| Componente React | PascalCase | `CashRegister.tsx` |
+| Hook | camelCase com `use` | `useCashRegister.ts` |
+| Constante de query key | array tipado | `["cash_registers", "open"] as const` |
+| Arquivo de utilitário | camelCase | `security.ts` |
+| Tipo/Interface | PascalCase | `CashMovement` |
+
+### Componentes
+
+- Máximo de ~150 linhas por arquivo. Extraia sub-componentes se precisar.
+- Sem `import React` — projeto usa React 17+ JSX transform.
+- Componentes de dialog ficam no mesmo arquivo da página que os abre (se pequenos) ou em `components/modulo/`.
+
+### Hooks
+
+Um hook por arquivo. Query keys sempre como constante no topo.
+
+```typescript
+// Padrão correto
+const CUSTOMERS_KEY = ["customers"] as const;
+
+export function useCreateCustomer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CustomerInsert) => {
+      const { error } = await supabase.from("customers").insert(data);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: CUSTOMERS_KEY }),
+    onError: (err: Error) => toast.error(err.message),
+  });
+}
+```
+
+### Banco de dados
+
+- Toda nova tabela precisa de `ENABLE ROW LEVEL SECURITY` + pelo menos 1 policy.
+- Toda função `SECURITY DEFINER` precisa de `REVOKE EXECUTE FROM PUBLIC` + `GRANT` seletivo.
+- Migrations em `supabase/migrations/` com nome `YYYYMMDDHHMMSS-descricao.sql`.
+- Após criar a tabela, adicionar os tipos em `src/integrations/supabase/types.ts`.
+
+### Commits
+
+Formato: `tipo: descrição em português`
+
+| Tipo | Uso |
+|---|---|
+| `feat:` | Nova funcionalidade |
+| `fix:` | Correção de bug |
+| `refactor:` | Refatoração sem mudança de comportamento |
+| `docs:` | Documentação |
+| `chore:` | Dependências, configuração |
+
+Exemplos:
+```
+feat: controle de caixa — abertura, sangria, suprimento, fechamento
+fix: trigger handle_new_user falhava ao criar user_roles
+docs: atualizar DATABASE.md com tabelas de caixa
+```
+
+> Não incluir `Co-Authored-By: Claude` nos commits.
+
+---
+
+## Fluxo de trabalho
+
+```bash
+# Criar branch
+git checkout -b feat/nome-da-feature
+
+# Sincronizar com main antes de commitar (Lovable faz push direto na main)
+git pull origin main --rebase
+
+# Commitar
+git add arquivo1 arquivo2
+git commit -m "feat: descrição"
+
+# Push
+git push origin feat/nome-da-feature
+```
+
+---
+
+## Aplicar migrations no Supabase
+
+```powershell
+$sql = [System.IO.File]::ReadAllText("supabase/migrations/ARQUIVO.sql")
+$body = @{ query = $sql } | ConvertTo-Json -Depth 5
+$headers = @{
+  Authorization = "Bearer SEU_PAT"
+  "Content-Type" = "application/json"
+}
+Invoke-RestMethod -Method Post `
+  -Uri "https://api.supabase.com/v1/projects/bciuykfoinbgkrsiljpg/database/query" `
+  -Headers $headers -Body $body
+```
+
+---
+
+## Estrutura de uma nova feature
+
+Exemplo — adicionar módulo "Promoções":
+
+```
+1. supabase/migrations/TIMESTAMP-promotions.sql
+   CREATE TABLE, ENABLE RLS, CREATE POLICY, CREATE INDEX
+
+2. src/integrations/supabase/types.ts
+   Adicionar Row/Insert/Update da tabela
+
+3. src/hooks/usePromotions.ts
+   usePromotions(), useCreatePromotion(), useDeletePromotion()
+
+4. src/pages/Promotions.tsx
+
+5. src/App.tsx → adicionar rota /promocoes
+
+6. src/components/SidebarNav.tsx → adicionar item de menu
+```
+
+---
+
+## Checklist antes de fazer push
+
+- [ ] `npm run lint` sem erros
+- [ ] TypeScript compila sem erros
+- [ ] Migration aplicada no Supabase
+- [ ] Tipos atualizados em `src/integrations/supabase/types.ts`
+- [ ] README ou ROADMAP atualizado se necessário
