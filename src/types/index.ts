@@ -64,7 +64,14 @@ export interface Appointment {
 }
 
 // Enumeração dos status possíveis de um agendamento
-export type AppointmentStatus = "scheduled" | "in-progress" | "completed" | "cancelled";
+export type AppointmentStatus =
+  | "pending"      // aguardando confirmação (agendamento público)
+  | "scheduled"    // agendado pela recepção
+  | "confirmed"    // confirmado pela equipe
+  | "arrived"      // cliente chegou (check-in)
+  | "in-progress"  // serviço em execução
+  | "completed"    // concluído
+  | "cancelled";   // cancelado
 
 // Representa a execução de um serviço dentro de um agendamento
 export interface ServiceExecution {
