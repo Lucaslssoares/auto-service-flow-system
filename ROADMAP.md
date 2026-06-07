@@ -177,4 +177,3 @@ Empresas com frota pagam fatura consolidada mensal (AutoStar tem isso):
 3. Priorização feita pelo responsável do produto
 
 **Responsável:** Lucas Soares — solareslucas403@gmail.com
-

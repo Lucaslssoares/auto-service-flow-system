@@ -172,7 +172,7 @@ user     → agendamento próprio
 -- 2. user_roles (admin recebe 4 roles, demais recebem 'user')
 ```
 
-Admins pré-definidos por e-mail: `solareslucas403@gmail.com`, `solareslucas403@gmail.com`.
+Admin pré-definido por e-mail: `solareslucas403@gmail.com`.
 
 ---
 

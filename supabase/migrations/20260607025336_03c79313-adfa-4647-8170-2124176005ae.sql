@@ -192,11 +192,11 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
-    CASE WHEN NEW.email IN ('solareslucas403@gmail.com', 'solareslucas403@gmail.com') THEN 'admin' ELSE 'user' END
+    CASE WHEN NEW.email = 'solareslucas403@gmail.com' THEN 'admin' ELSE 'user' END
   )
   ON CONFLICT (id) DO NOTHING;
 
-  IF NEW.email IN ('solareslucas403@gmail.com', 'solareslucas403@gmail.com') THEN
+  IF NEW.email = 'solareslucas403@gmail.com' THEN
     INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'admin') ON CONFLICT DO NOTHING;
     INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'manager') ON CONFLICT DO NOTHING;
     INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'employee') ON CONFLICT DO NOTHING;

@@ -46,7 +46,6 @@ Admins pré-configurados pelo trigger de criação de usuário:
 | Email | Permissão |
 |---|---|
 | `solareslucas403@gmail.com` | admin |
-| `solareslucas403@gmail.com` | admin |
 
 Qualquer outro e-mail cadastrado recebe role `user`.
 

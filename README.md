@@ -86,7 +86,7 @@ Sistema de gestão operacional para lava-rápidos. SPA React com backend Supabas
 - Cadastro e login por email/senha
 - Auto-confirm habilitado (sem e-mail de verificação)
 - Trigger `handle_new_user` cria perfil e roles automaticamente
-- Admins pré-definidos: `solareslucas403@gmail.com`, `solareslucas403@gmail.com`
+- Admin pré-definido: `solareslucas403@gmail.com`
 
 ---
 

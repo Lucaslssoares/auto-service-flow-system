@@ -206,7 +206,7 @@ BEGIN
       NEW.raw_user_meta_data->>'name',
       split_part(NEW.email, '@', 1)
     ),
-    CASE WHEN NEW.email IN ('solareslucas403@gmail.com', 'solareslucas403@gmail.com') THEN 'admin' ELSE 'user' END
+    CASE WHEN NEW.email = 'solareslucas403@gmail.com' THEN 'admin' ELSE 'user' END
   )
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
