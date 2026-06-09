@@ -111,6 +111,126 @@ export type Database = {
           },
         ]
       }
+      business_config: {
+        Row: {
+          id: number
+          max_per_slot: number
+          slot_duration_minutes: number
+          updated_at: string
+          working_end: string
+          working_start: string
+        }
+        Insert: {
+          id?: number
+          max_per_slot?: number
+          slot_duration_minutes?: number
+          updated_at?: string
+          working_end?: string
+          working_start?: string
+        }
+        Update: {
+          id?: number
+          max_per_slot?: number
+          slot_duration_minutes?: number
+          updated_at?: string
+          working_end?: string
+          working_start?: string
+        }
+        Relationships: []
+      }
+      cash_movements: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          cash_register_id: string
+          created_at: string
+          description: string | null
+          id: string
+          payment_method: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          appointment_id?: string | null
+          cash_register_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_method?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          cash_register_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_method?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_movements_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_movements_cash_register_id_fkey"
+            columns: ["cash_register_id"]
+            isOneToOne: false
+            referencedRelation: "cash_registers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cash_registers: {
+        Row: {
+          closed_at: string | null
+          closing_amount_actual: number | null
+          closing_amount_expected: number | null
+          created_at: string
+          difference: number | null
+          id: string
+          notes: string | null
+          opened_at: string
+          opening_amount: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          closing_amount_actual?: number | null
+          closing_amount_expected?: number | null
+          created_at?: string
+          difference?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opening_amount?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          closing_amount_actual?: number | null
+          closing_amount_expected?: number | null
+          created_at?: string
+          difference?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opening_amount?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           cpf: string
